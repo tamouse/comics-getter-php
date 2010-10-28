@@ -2,3 +2,4 @@ config.inc
 *.zip
 *~
 .backups
+create_db.sql

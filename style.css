@@ -25,3 +25,13 @@ div#content {
 	color: #DDD;
 	background-color: white;
 }
+.error {
+	color: red;
+	background-color: #FCC;
+	border: 1px solid red;
+}
+.debug {
+	color: black;
+	background-color: #FCF;
+	border: 1px solid #000;
+}

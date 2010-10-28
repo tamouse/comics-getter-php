@@ -1,3 +1,9 @@
+{* add a new comic subscription *}
+{include file="header.tpl" title="Add a new comic subscription"}
+{include file="nav.tpl"}
+
+<div id="content">
+	
 {* form segment to add or edit a subscription *}
 <form action="{$action}" method="post" accept-charset="utf-8" id="addeditform">
 	{* first give hidden values for form *}
@@ -10,3 +16,6 @@
 	<li><input type="submit" value="{$action_type} Subscription" /></li>
 	</ul>
 </form>
+</div>
+
+{include file="footer.tpl"}
