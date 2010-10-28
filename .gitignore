@@ -1,0 +1,4 @@
+config.inc
+*.zip
+*~
+.backups
