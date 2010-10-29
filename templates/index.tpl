@@ -3,17 +3,18 @@
 {include file="nav.tpl"}
 
 <div id="content">
-	<h2>Latest Comics</h2>
-	<ul>
-		<li>
-			<p class="comic">
-				<span class="comictitle">{$comic['title']}</span>
-				<span class="comicdate">{$comic['comicdate']}</span>
-				<br />
-				<a href="{$comic['comicuri']}"><img src="{$comicuri}" alt="{$title} {$comicdate}"  /> </a>
-			</p>
+	{if $num_comics > 0}
+	<ul>{foreach from=$comics item=comic}
+		<li class="comicentry">
+			<span class="comictitle">{$comic.name}</span>
+			<span class="comicdate">{$comic.comicdate}</span>
+			<br />
+			<a href="{$comic.uri}"><img src="{$smarty.const.APP_URI_BASE}{$comic.filespec}" alt="{$comic.name} {$comic.comicdate}"  /> </a>
 		</li>
-	</ul>
+	{/foreach}</ul>
+	{else}
+	<h3>No comics to display.</h3>
+	{/if}
 </div>
 
 {include file="footer.tpl"}

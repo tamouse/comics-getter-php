@@ -3,3 +3,6 @@ config.inc
 *~
 .backups
 create_db.sql
+comics
+templates_c
+.DS_*

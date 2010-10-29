@@ -3,11 +3,12 @@
 {include file="nav.tpl"}
 
 <div id="content">
-	
+{include file="messages.tpl"}
+{include file="errors.tpl"}
 {* form segment to add or edit a subscription *}
 <form action="{$action}" method="post" accept-charset="utf-8" id="addeditform">
 	{* first give hidden values for form *}
-	<input type="hidden" name="comic_id" value="{$comic_id}" id="comic_id" />
+	<input type="hidden" name="subscription_id" value="{$subscription_id}" id="comic_id" />
 	
 	{* next the form elements *}
 	<ul class="formelements">
