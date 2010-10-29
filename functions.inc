@@ -173,6 +173,25 @@ function get_one_assoc($sql)
 }
 
 /**
+ * Retrieve the parsing engine for the given url $u
+ *
+ * @return $engine - function to use to parse the url $u
+ * @author Tamara Temple
+ **/
+function get_parse_engine($u)
+{
+	global $parse_engines;
+	$engine = NULL;
+	foreach ($parse_engines as $key => $parse_engine) {
+		if (preg_match('/'.$parse_engine['match'].'/i',$u)) {
+			$engine = $parse_engine['engine'];
+			break;
+		}
+	}
+	return $engine;
+}
+
+/**
  * Retrieve a record containing comic info for the given comic id
  *
  * @return comic record as associative array

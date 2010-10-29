@@ -22,12 +22,20 @@ div.footer {
 	font-size: 9pt;
 }
 div#nav {
-	width: 200px;
-	float: left;
+	width: 100%;
+	height: 50px;
 	border: 1px solid #999;
-	padding: 10px;
+	padding: 0;
 	color: white;
 	background-color: navy;
+}
+div#nav ul {
+	padding: 0;
+}
+div#nav ul li {
+	list-style-type: none;
+	float: left;
+	padding: 0px 20px;
 }
 div#nav a, div#nav a:hover, div#nav a:active, div#nav a:link {
 	color: white;

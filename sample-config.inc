@@ -89,7 +89,10 @@ define("APP_NAME",'comicgetter');
 /**
  * Comic services
  */
-define("GOCOMICS",'gocomics.com');
+$parse_engines =
+	array(
+		array('match'=>'gocomics.com','engine'=>'parse_gocomics')
+	);
 
 
 /**

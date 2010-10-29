@@ -3,6 +3,8 @@
 {include file="nav.tpl"}
 
 <div id="content">
+	{include file="messages.tpl"}
+	{include file="errors.tpl"}
 	{if $num_comics_retrieved > 0}
 	<table>
 		<tr>

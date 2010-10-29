@@ -117,22 +117,28 @@ $subscriptions = get_all_array(SUBSCRIPTIONSTBL);
 $comic_ids = Array();
 $start_time = microtime(TRUE);
 $delays=0;
+$messages = Array();
 
 foreach ($subscriptions as $key => $subscription) {
 	if ($key > 0) {
 		sleep (DELAY_TIME);
 		$delays++;
 	}
-	if (preg_match('/'.GOCOMICS.'/i', $subscription['uri'])) {
-		list ($comic_date, $imgsrc) = parse_gocomics($subscription['uri']);
-	}
-	if (!empty($imgsrc)) {
-		$lastcomic = get_last_comic_pulled($subscription['id']);
-		if ($comic_date > strtotime($lastcomic['comicdate'])) {
-			$filespec = pull_comic($subscription['name'],$comic_date,$imgsrc);
-			$id = save_comic($subscription['id'], $comic_date, $imgsrc, $filespec);
-			$comic_ids[] = $id;
+	$engine = get_parse_engine($subscription['uri']);
+	if (isset($engine)) {
+		list ($comic_date, $imgsrc) = $engine($subscription['uri']);
+		if (!empty($imgsrc)) {
+			$lastcomic = get_last_comic_pulled($subscription['id']);
+			if ($comic_date > strtotime($lastcomic['comicdate'])) {
+				$filespec = pull_comic($subscription['name'],$comic_date,$imgsrc);
+				$id = save_comic($subscription['id'], $comic_date, $imgsrc, $filespec);
+				$comic_ids[] = $id;
+			}
+		} else {
+			$messages[] = "No comic image in page at ".$subscription['uri'];
 		}
+	} else {
+		$messages[] = "No parse engine for ".$subscription['uri'];
 	}
 
 	
@@ -148,6 +154,7 @@ foreach ($comic_ids as $key) {
 }
 debug_var("\$comics_retrieved=",$comics_retrieved);
 
+$smarty->assign('messages',$messages);
 $smarty->assign('elapsed_time',$elapsed_time);
 $smarty->assign('delays',$delays);
 $smarty->assign('num_comics_retrieved',count($comics_retrieved));
