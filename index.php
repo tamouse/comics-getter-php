@@ -15,6 +15,9 @@
 
 require_once('config.inc');
 
+if (isset($_GET['messages'])) $messages = $_GET['messages'];
+if (isset($_GET['errors'])) $errors = $_GET['errors'];
+
 $subscriptions = get_all_array(SUBSCRIPTIONSTBL);
 $comics = Array();
 foreach ($subscriptions as $key => $subscription) {
@@ -28,4 +31,6 @@ $smarty->assign('additional_query_string',http_build_query($additional_query_par
 $smarty->assign('title','Latest Comics');
 $smarty->assign('num_comics',count($comics));
 $smarty->assign('comics', $comics);
+if (isset($messages)) $smarty->assign('messages',$messages);
+if (isset($errors)) $smarty->assign('errors',$errors);
 $smarty->display('index.tpl');

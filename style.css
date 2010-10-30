@@ -88,3 +88,12 @@ div#content table tr even {
 	list-style-type: none;
 	padding: 20px 0px;
 }
+div#confirm {
+	width:40%;
+	margin: 10px auto;
+	border: 1px solid #999;
+	text-align: center;
+	padding: 20px;
+	color: maroon;
+	background-color: white;
+}

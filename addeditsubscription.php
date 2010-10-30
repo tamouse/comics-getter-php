@@ -27,10 +27,7 @@ if (isset($_GET['action'])) {
 			
 		default:
 			$errors[] = "Invalid action given.";
-			$redirect = "subscriptions.php?".http_build_query($errors);
-			if (!empty($additional_query_parms)) {
-				$redirect .= "&" . http_build_query($additional_query_parms);
-			}
+			$redirect = buildredirect("subscriptions.php");
 			header("Location: ".$redirect);
 			break;
 	}
@@ -147,13 +144,7 @@ if (!empty($_POST)) {
 		/* no validation errors */
 		$id = save_subscription($name, $uri, $id);
 		$messages[] = "subscription saved.";
-		$options = array('id' => $id,
-						 'messages' => $messages);
-		$redirect_target = "Subscriptions";
-		$redirect_url = "subscriptions.php?" . http_build_query($options);
-		if (!empty($additional_query_parms)) {
-			$redirect_url .= "&" . http_build_query($additional_query_parms);
-		}
+		$redirect = buildredirect("subscriptions.php");
 		debug("\$redirect_url=$redirect_url");
 		if (DEBUG === FALSE) header("Location: ".$redirect_url);
 	}

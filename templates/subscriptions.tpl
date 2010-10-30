@@ -4,6 +4,7 @@
 
 <div id="content">
 	{include file="messages.tpl"}
+	{include file="errors.tpl"}
 	<form action="addeditsubscription.php?action=new{if !empty($additional_query_string)}&{$additional_query_string}{/if}" method="get" accept-charset="utf-8">
 		<p><input type="submit" value="Add a new subscription" /></p>
 	</form>

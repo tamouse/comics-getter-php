@@ -13,6 +13,35 @@
  **/
 
 /**
+ * Build a redirect path including messages, errors, and additional query data
+ *
+ * @return redirect url
+ * @author Tamara Temple
+ **/
+function buildredirect($u)
+{
+	global $errors, $messages, $additional_query_parms;
+	
+	$redirect = $u;
+	$options = Array();
+	if (isset($additional_query_parms) && !empty($additional_query_parms)) {
+		$options = $additional_query_parms;
+	}
+	if (isset($messages) && !empty($messages)) {
+		$options['messages'] = $messages;
+	}
+	if (isset($errors) && !empty($errors)) {
+		$options['errors'] = $errors;
+	}
+	debug_var("\$options:",$options);
+	if (!empty($options)) {
+		$redirect .= "?" . http_build_query($options);
+	}
+	return $redirect;
+	
+}
+
+/**
  * Build a url string based on the parts given
  *
  * @return url string
@@ -162,9 +191,10 @@ function get_last_comic_pulled($subscription_id)
  * @return single record returned as associative array
  * @author Tamara Temple
  **/
-function get_one_assoc($sql)
+function get_one_assoc($tbl,$id)
 {
 	global $db;
+	$sql = "SELECT * FROM ".$tbl." WHERE `id`=".$id." LIMIT 1";
 	$result = $db->query($sql);
 	if ($result === FALSE) emit_fatal_error("Could not execute \$sql=$sql: error=".$db->error);
 	$row = $result->fetch_assoc();
