@@ -4,7 +4,7 @@
 
 <div id="content">
 	{include file="messages.tpl"}
-	<form action="addsubscription.php" method="post" accept-charset="utf-8">
+	<form action="addeditsubscription.php?action=new{if !empty($additional_query_string)}&{$additional_query_string}{/if}" method="get" accept-charset="utf-8">
 		<p><input type="submit" value="Add a new subscription" /></p>
 	</form>
 	<table>
@@ -17,8 +17,8 @@
 		{foreach from=$subscriptions item=subscription}
 		<tr class="{cycle values="odd,even"}">
 			<td>
-			<a href="editsubscription.php?id={$subscription.id}" title="Edit Subscription"><img src="{$smarty.const.APP_URI_BASE}images/edit.jpg" width="32" height="32" alt="edit subscription"></a>
-			<a href="deletesubscription.php?id={$subscription.id}" title="Delete Subscription"><img src="{$smarty.const.APP_URI_BASE}images/delete.jpg" width="32" height="32" alt="delete subscription"></a>
+			<a href="addeditsubscription.php?action=edit&id={$subscription.id}{if !empty($additional_query_string)}&{$additional_query_string}{/if}" title="Edit Subscription"><img src="{$smarty.const.APP_URI_BASE}images/edit.jpg" width="32" height="32" alt="edit subscription"></a>
+			<a href="deletesubscription.php?id={$subscription.id}{if !empty($additional_query_string)}&{$additional_query_string}{/if}" title="Delete Subscription"><img src="{$smarty.const.APP_URI_BASE}images/delete.jpg" width="32" height="32" alt="delete subscription"></a>
 			</td>
 			<td>
 				{$subscription.name}

@@ -23,6 +23,8 @@ foreach ($subscriptions as $key => $subscription) {
 }
 debug_var("\$comics=",$comics);
 
+$smarty->assign('additional_query_string',http_build_query($additional_query_parms));
+
 $smarty->assign('title','Latest Comics');
 $smarty->assign('num_comics',count($comics));
 $smarty->assign('comics', $comics);

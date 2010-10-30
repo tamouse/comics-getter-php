@@ -27,6 +27,7 @@ if (isset($_GET['messages'])) {
 
 $subscriptions = get_all_array(SUBSCRIPTIONSTBL);
 
+$smarty->assign('additional_query_string',http_build_query($additional_query_parms));
 $smarty->assign('messages',$messages);
 $smarty->assign('subscriptions', $subscriptions);
 $smarty->assign('title', "Manage Subscriptions");

@@ -7,22 +7,47 @@
 # @package: comicgetter
 #
 
-repofiles = Makefile addsubscription.php db_init.inc functions.inc getcomic.php gocomics.inc index.php sample-config.inc \
-	schema.sql style.css subscriptions.php \
-	editsubscription.php deletesubscription.php mngcomics.php \
-	.gitignore admin/clean_config.pl images/delete.jpg images/edit.jpg \
-	templates/addeditsubscriptionform.tpl \
-	templates/errors.tpl templates/footer.tpl templates/header.tpl templates/index.tpl templates/messages.tpl templates/nav.tpl templates/newcomics.tpl \
-	templates/subscriptions.tpl templates/deletesubscription.tpl templates/mngcomics.tpl
+repofiles = \
+Makefile \
+addeditsubscription.php \
+db_init.inc \
+deletesubscription.php \
+functions.inc \
+getcomic.php \
+gocomics.inc \
+index.php \
+mngcomics.php \
+rss.php \
+sample-config.inc \
+schema.sql \
+style.css \
+subscriptions.php \
+.gitignore \
+admin/clean_config.pl \
+images/delete.jpg \
+images/edit.jpg \
+templates/addeditsubscriptionform.tpl \
+templates/deletesubscription.tpl \
+templates/errors.tpl \
+templates/footer.tpl \
+templates/header.tpl \
+templates/index.tpl \
+templates/messages.tpl \
+templates/mngcomics.tpl \
+templates/nav.tpl \
+templates/newcomics.tpl \
+templates/rss.tpl \
+templates/subscriptions.tpl
 
 
 updaterepo: admin/last_update
-	git add $(repofiles)
 	git commit # will launch an editor to create the commit message
 	git push origin master
-	touch admin/last_update
+
 	
 admin/last_update: $(repofiles)
+	git add $?
+	touch admin/last_update
 	git add admin/last_update
 
 

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Add a new subscription to the database
+ * Add or Edit a subscription to the database
  *
  * @author Tamara Temple
  * @version $Id$
@@ -15,6 +15,27 @@
 include_once('config.inc');
 include_once('HTTP.php');
 
+if (isset($_GET['action'])) {
+	switch ($_GET['action']) {
+		case 'new':
+			define("ACTION","NEW");
+			break;
+
+		case 'edit':
+			define("ACTION","EDIT");
+			break;
+			
+		default:
+			$errors[] = "Invalid action given.";
+			$redirect = "subscriptions.php?".http_build_query($errors);
+			if (!empty($additional_query_parms)) {
+				$redirect .= "&" . http_build_query($additional_query_parms);
+			}
+			header("Location: ".$redirect);
+			break;
+	}
+}
+
 /**************************************
  * FUNCTIONS
  **************************************/
@@ -25,21 +46,26 @@ include_once('HTTP.php');
  * @return id - subscription id of last subscription entered
  * @author Tamara Temple
  **/
-function save_subscription($name,$uri)
+function save_subscription($name,$uri,$id=0)
 {
 	global $db;
-	$sql = "INSERT INTO ".SUBSCRIPTIONSTBL." SET ";
+	$sql = (ACTION == 'new' ? "INSERT" : "UPDATE")." INTO ".SUBSCRIPTIONSTBL." SET ";
+	if (ACTION == 'edit') $columns[] = '`id`='.$id;
 	$columns[]	= '`name`='."'".$name."'";
 	$columns[]	= '`uri`='."'".$uri."'";
-	$columns[]	= '`created`=NOW()';
+	if (ACTION == 'new') $columns[]	= '`created`=NOW()';
 	$columns[]	= '`updated`=NOW()';
 	$sql .= join(", ",$columns);
+	if (ACTION == 'edit') {
+		$sql .= " WHERE `id`=".$id;
+	}
 	$result = $db->query($sql);
 	if ($result === FALSE) {
-		emit_fatal_error("Could not insert new subscription into database: \$sql=$sql. error=".$db->error);
+		emit_fatal_error("Could not ".(ACTION == 'new' ? "insert new" : "update")." subscription into database: \$sql=$sql. error=".$db->error);
 	}
-	return $db->insert_id;
+	return (ACTION == 'new' ? $db->insert_id : $id);
 }
+
 
 
 /**
@@ -50,7 +76,7 @@ function save_subscription($name,$uri)
  **/
 function validatename($name)
 {
-	global $errors;
+	global $errors,$messages;
 	$name = strip_tags($name);
 	if (!get_magic_quotes_gpc()) $name = mysqli_real_escape_string($name);
 	if (preg_match('/^\s*$/',$name)) {
@@ -69,22 +95,22 @@ function validatename($name)
  **/
 function validateuri($uri)
 {
-	global $errors;
+	global $errors,$messages;
 	$uri = strip_tags($uri);
-	if (preg_match('/^\s*$/',$uri)) {
-		/* empty string */
-		$errors[]	= 'URI Must not be empty';
-		return NULL;
-	}
 	$uri_parts = parse_url($uri);
 	if ($uri_parts === FALSE) {
 		$errors[] = "Malformed URI.";
 		return NULL;
 	}
 	$uri = build_url($uri_parts);
-	if ($uri === FALSE) {
+	if (!isset($uri)) {
 		/* bad uri formed */
 		$errors[] = "Malformed URI.";
+		return NULL;
+	}
+	if (empty($uri) || preg_match('/^\s*$/',$uri)) {
+		/* empty string */
+		$errors[]	= 'URI Must not be empty';
 		return NULL;
 	}
 	$headers = HTTP::head($uri); /* Verify that the URI exists */
@@ -95,6 +121,9 @@ function validateuri($uri)
 	elseif ($headers['response_code'] != '200') {
 		$errors[] = "Invalid URI.";
 		return NULL;
+	}
+	if (!get_parse_engine($uri)) {
+		$messages[] = "No parse engine for $uri. No comics will be retrieved.";
 	}
 	return $uri;
 	
@@ -109,19 +138,24 @@ $messages = Array();
 if (!empty($_POST)) {
 	/* form has been submitted */
 	$errors = Array();
+	$id = (ACTION == 'edit' ? $_POST['id'] : 0);
 	$name = $_POST['comic_name'];
 	$name = validatename($name);
 	$uri = $_POST['comic_uri'];
 	$uri = validateuri($uri);
 	if (empty($errors)) {
 		/* no validation errors */
-		$id = save_subscription($name, $uri);
-		$messages[] = "New subsciption saved.";
+		$id = save_subscription($name, $uri, $id);
+		$messages[] = "subscription saved.";
 		$options = array('id' => $id,
 						 'messages' => $messages);
-		$redirect_url = "Location: subscriptions.php?" . http_build_query($options);
+		$redirect_target = "Subscriptions";
+		$redirect_url = "subscriptions.php?" . http_build_query($options);
+		if (!empty($additional_query_parms)) {
+			$redirect_url .= "&" . http_build_query($additional_query_parms);
+		}
 		debug("\$redirect_url=$redirect_url");
-		if (DEBUG === FALSE) header($redirect_url);
+		if (DEBUG === FALSE) header("Location: ".$redirect_url);
 	}
 } else {
 	$name = '';
@@ -129,11 +163,28 @@ if (!empty($_POST)) {
 }
 
 $subscription_id = 0;
+$name = stripslashes($name);
+$uri = stripslashes($uri);
 
-$smarty->assign('messages',$messages);
-$smarty->assign('errors',$errors);
+if (isset($redirect_url)) {
+	$smarty->assign('redirect_url',$redirect_url);
+}
+if (isset($redirect_target)) {
+	$smarty->assign('redirect_target',$redirect_target);
+}
+if (!empty($additional_query_parms)) {
+	$smarty->assign('additional_query_string',http_build_query($additional_query_parms));
+}
+if (isset($messages)) {
+	$smarty->assign('messages',$messages);
+}
+if (isset($errors)) {
+	$smarty->assign('errors',$errors);
+}
+$smarty->assign('action',htmlentities($_SERVER['PHP_SELF']));
+$smarty->assign('action_type',(ACTION=='new'?'Add':'Update'));
 $smarty->assign('comic_name',$name);
 $smarty->assign('comic_uri',$uri);
 $smarty->assign('subscription_id',$subscription_id);
-$smarty->assign('title','Add a new subscription');
+$smarty->assign('title',(ACTION=='new'?'Add':'Edit').' a subscription');
 $smarty->display('addeditsubscriptionform.tpl');

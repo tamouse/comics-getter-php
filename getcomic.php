@@ -154,6 +154,20 @@ foreach ($comic_ids as $key) {
 }
 debug_var("\$comics_retrieved=",$comics_retrieved);
 
+if (NOHTML) {
+	header("Content-type: text/plain");
+	echo join("\n",$messages) . "\n";
+	echo join("\n",$errors) . "\n";
+	if (empty($comics_retrieved)) {
+		echo "No comics retrieved this pass\n";
+	} else {
+		echo count($comics_retrieved) . " comic(s) retrieved this pass\n";
+	}
+	printf("Elapsed time: %.4f\n",$elapsed_time);
+	exit;
+}
+
+$smarty->assign('additional_query_string',http_build_query($additional_query_parms));
 $smarty->assign('messages',$messages);
 $smarty->assign('elapsed_time',$elapsed_time);
 $smarty->assign('delays',$delays);

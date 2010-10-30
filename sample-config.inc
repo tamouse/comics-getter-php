@@ -34,9 +34,34 @@ define("DBNAME",'');
 define("TBLPREFIX",'cg_');
 define("SUBSCRIPTIONSTBL",TBLPREFIX . 'subscriptions');
 define("COMICSTBL", TBLPREFIX . 'comics');
-define("DELAY_TIME",5); /* 5 seconds delay between fetches */
+define("DELAY_TIME",2); /* # of seconds delay between fetches */
 
-define("DEBUG",FALSE);
+/**
+ * Setting some operating values from the query string
+ */
+$additional_query_parms = Array();
+
+/**
+ * Allow debug option to be set on the query string
+ **/
+if (isset($_GET['debug']) && $_GET['debug'] == 'true') {
+	define("DEBUG",FALSE);
+	$additional_query_parms['debug'] = 'true';
+} else {
+	define("DEBUG",FALSE);	
+}
+
+/**
+ * Modify behaviour to emit plaintext instead of html
+ **/
+if ((isset($_GET['periodic']) && $_GET['periodic'] == 'true') || 
+	(isset($_GET['nohtml']) && $_GET['nohtml'] == 'true')) {
+	define("NOHTML",TRUE);
+	$additional_query_parms['nohtml'] = 'true';
+} else {
+	define("NOHTML",FALSE);
+}
+
 if (DEBUG) {
 	ini_set('display_errors',TRUE);
 	ini_set('display_startup_errors',TRUE);
@@ -55,7 +80,7 @@ require_once('functions.inc');
 
 define("TEMPDIR","/tmp/");
 define("COMICDIR", "comics");
-
+define("MIMETYPE",'mimetype --database=/sw/share/mime -b '); /* flags set for mimetype program */
 
 define("APPBOTTOMDIR",'comicgetter');	/* base directory of application -- if you change the application location or name, you must change this */
 
@@ -85,6 +110,12 @@ define("APP_URI_BASE", join('/',$app_uri_base_arr) . '/'); /* use this in links 
 //debug("APP_URI_BASE=".APP_URI_BASE);
 
 define("APP_NAME",'comicgetter');
+
+/**
+ * Use this to create fully qualified URLs by adding the path element
+ **/
+$full_url_parts = array('scheme'=>'http','host'=>$_SERVER['SERVER_NAME'],'port'=>$_SERVER['SERVER_PORT']);
+
 
 /**
  * Comic services

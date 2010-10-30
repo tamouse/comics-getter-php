@@ -152,6 +152,7 @@ function get_last_comic_pulled($subscription_id)
 		$row = NULL;
 	}
 	$result->free();
+	debug_var("last comic pulled row:",$row);
 	return $row;
 }
 
