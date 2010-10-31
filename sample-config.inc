@@ -57,6 +57,7 @@ if (isset($_GET['debug']) && $_GET['debug'] == 'true') {
 if ((isset($_GET['periodic']) && $_GET['periodic'] == 'true') || 
 	(isset($_GET['nohtml']) && $_GET['nohtml'] == 'true')) {
 	define("NOHTML",TRUE);
+	header("Content-type: text/plain");
 	$additional_query_parms['nohtml'] = 'true';
 } else {
 	define("NOHTML",FALSE);

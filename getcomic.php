@@ -118,6 +118,7 @@ $comic_ids = Array();
 $start_time = microtime(TRUE);
 $delays=0;
 $messages = Array();
+$errors = Array();
 
 foreach ($subscriptions as $key => $subscription) {
 	if ($key > 0) {
@@ -155,15 +156,14 @@ foreach ($comic_ids as $key) {
 debug_var("\$comics_retrieved=",$comics_retrieved);
 
 if (NOHTML) {
-	header("Content-type: text/plain");
-	echo join("\n",$messages) . "\n";
-	echo join("\n",$errors) . "\n";
+	if (!empty($messages)) echo "Messages:\n" . join("\n",$messages) . "\n";
+	if (!empty($errors)) echo "Errors:\n" . join("\n",$errors) . "\n";
 	if (empty($comics_retrieved)) {
 		echo "No comics retrieved this pass\n";
 	} else {
 		echo count($comics_retrieved) . " comic(s) retrieved this pass\n";
 	}
-	printf("Elapsed time: %.4f\n",$elapsed_time);
+	printf("Elapsed time: %.4f with %d delay(s)\n",$elapsed_time,$delays);
 	exit;
 }
 

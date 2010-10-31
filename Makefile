@@ -37,7 +37,9 @@ templates/mngcomics.tpl \
 templates/nav.tpl \
 templates/newcomics.tpl \
 templates/rss.tpl \
-templates/subscriptions.tpl
+templates/subscriptions.tpl \
+tests/testSHD.php
+
 
 
 updaterepo: admin/last_update

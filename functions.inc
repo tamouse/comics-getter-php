@@ -165,11 +165,15 @@ function get_last_comic_pulled($subscription_id)
 	$columns[]	= 's.`uri`';
 	$columns[]	= 'c.`imgsrc`';
 	$columns[]	= 'c.`filespec`';
-	$columns[]	= 'MAX(c.`comicdate`) as comicdate';
+	$columns[]	= 'c.`comicdate`';
 	$columns[]	= 'c.`pulltime`';
 	$sql 		.= join(", ", $columns);
 	$sql 		.= " FROM " . COMICSTBL . " as c, " . SUBSCRIPTIONSTBL . " as s ";
-	$sql		.= " WHERE c.subscription_id=" . $subscription_id . " AND c.subscription_id=s.id ";
+	$sql		.= " WHERE ";
+	$wherebits[] = "comicdate=(select MAX(comicdate) from ".COMICSTBL." where subscription_id=".$subscription_id.")";
+	$wherebits[] = "c.subscription_id=" . $subscription_id;
+	$wherebits[] = "c.subscription_id=s.id";
+	$sql		.= join(" AND ",$wherebits);
 	$sql		.= " GROUP BY s.name ";
 	$sql		.= " LIMIT 1";
 	$result = $db->query($sql);
