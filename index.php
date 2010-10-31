@@ -3,7 +3,7 @@
 /**
  * Main page for comicgetter application -- displays most recent comics
  *
- * @author Tamara Temple
+ * @author Tamara Temple <tamara@tamaratemple.com>
  * @version $Id$
  * @copyright Tamara Temple Development, 29 October, 2010
  * @package comicgetter

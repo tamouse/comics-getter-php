@@ -2,7 +2,7 @@
 /**
  * General functions used in comicgetter app
  *
- * @author Tamara Temple
+ * @author Tamara Temple <tamara@tamaratemple.com>
  * @version $Id$
  * @copyright Tamara Temple Development, 28 October, 2010
  * @package comicgetter
@@ -16,7 +16,7 @@
  * Build a redirect path including messages, errors, and additional query data
  *
  * @return redirect url
- * @author Tamara Temple
+ * @author Tamara Temple <tamara@tamaratemple.com>
  **/
 function buildredirect($u)
 {
@@ -45,7 +45,7 @@ function buildredirect($u)
  * Build a url string based on the parts given
  *
  * @return url string
- * @author Tamara Temple
+ * @author Tamara Temple <tamara@tamaratemple.com>
  **/
 function build_url($parts)
 {
@@ -83,7 +83,7 @@ function build_url($parts)
  * debug function - print a message if DEBUG === TRUE
  *
  * @return void
- * @author Tamara Temple
+ * @author Tamara Temple <tamara@tamaratemple.com>
  **/
 function debug($msg)
 {
@@ -96,7 +96,7 @@ function debug($msg)
  * debug var function - dump a variable if DEBUG === TRUE
  *
  * @return void
- * @author Tamara Temple
+ * @author Tamara Temple <tamara@tamaratemple.com>
  **/
 function debug_var($msg,$var)
 {
@@ -112,7 +112,7 @@ function debug_var($msg,$var)
  * Emit a fatal error message to the log and output, and die
  *
  * @return void
- * @author Tamara Temple
+ * @author Tamara Temple <tamara@tamaratemple.com>
  **/
 function emit_fatal_error($msg)
 {
@@ -125,7 +125,7 @@ function emit_fatal_error($msg)
  * Get All records from a table, returning them in an indexed array of records as associative arrays
  *
  * @return indexed array of records as associative arrays
- * @author Tamara Temple
+ * @author Tamara Temple <tamara@tamaratemple.com>
  **/
 function get_all_array($tblname)
 {
@@ -153,7 +153,7 @@ function get_all_array($tblname)
  * Get the last comic pulled for a given subscription
  *
  * @return date of last comic pulled
- * @author Tamara Temple
+ * @author Tamara Temple <tamara@tamaratemple.com>
  **/
 function get_last_comic_pulled($subscription_id)
 {
@@ -193,7 +193,7 @@ function get_last_comic_pulled($subscription_id)
  * Get a single record given the $sql input
  *
  * @return single record returned as associative array
- * @author Tamara Temple
+ * @author Tamara Temple <tamara@tamaratemple.com>
  **/
 function get_one_assoc($tbl,$id)
 {
@@ -211,7 +211,7 @@ function get_one_assoc($tbl,$id)
  * Retrieve the parsing engine for the given url $u
  *
  * @return $engine - function to use to parse the url $u
- * @author Tamara Temple
+ * @author Tamara Temple <tamara@tamaratemple.com>
  **/
 function get_parse_engine($u)
 {
@@ -227,10 +227,40 @@ function get_parse_engine($u)
 }
 
 /**
+ * Return the referer of this page, removing the query string and application path info
+ *
+ * @return $referer 
+ * @author Tamara Temple <tamara@tamaratemple.com>
+ **/
+function get_referer()
+{
+	global $errors;
+	if (!isset($_SERVER['HTTP_REFERER'])) return DEFAULT_RETURN;
+	debug("HTTP_REFERER=".$_SERVER['HTTP_REFERER']);
+	$referer = $_SERVER['HTTP_REFERER'];
+	if (!preg_match('!'.APP_URI_BASE.'!',$referer)) {
+		$errors[] = 'Referer not from this application';
+		return DEFAULT_RETURN;
+	}
+	$referer = preg_replace('/\?.*/','',$referer);
+	if (!isset($referer)) {
+		$errors[] = 'Error occured when cleaning HTTP_REFERER in get_referer';
+		return DEFAULT_RETURN;
+	}
+	$referer = preg_replace('!^[a-z]+://[^/]*'.APP_URI_BASE.'!','',$referer);
+	if (!isset($referer)) {
+		$errors[] = 'Error occured when cleaning up path in get_referer';
+		return DEFAULT_RETURN;
+	}
+	debug("\$referer=$referer");
+	return $referer;
+}
+
+/**
  * Retrieve a record containing comic info for the given comic id
  *
  * @return comic record as associative array
- * @author Tamara Temple
+ * @author Tamara Temple <tamara@tamaratemple.com>
  **/
 function get_this_comic($comic_id)
 {

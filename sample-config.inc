@@ -3,7 +3,7 @@
 /**
  * Configuration file - sample - for comicgetter app
  *
- * @author Tamara Temple
+ * @author Tamara Temple <tamara@tamaratemple.com>
  * @version $Id$
  * @copyright Tamara Temple Development, 28 October, 2010
  * @package comicgetter
@@ -46,6 +46,8 @@ $additional_query_parms = Array();
  **/
 if (isset($_GET['debug']) && $_GET['debug'] == 'true') {
 	define("DEBUG",FALSE);
+	ini_set('display_errors',TRUE);
+	ini_set('display_startup_errors',TRUE);
 	$additional_query_parms['debug'] = 'true';
 } else {
 	define("DEBUG",FALSE);	
@@ -63,11 +65,6 @@ if ((isset($_GET['periodic']) && $_GET['periodic'] == 'true') ||
 	define("NOHTML",FALSE);
 }
 
-if (DEBUG) {
-	ini_set('display_errors',TRUE);
-	ini_set('display_startup_errors',TRUE);
-}
-
 /*************************************************************************
  * DO NOT CHANGE BELOW UNLESS YOU KNOW WHAT YOU'RE DOING
  *************************************************************************/
@@ -76,12 +73,16 @@ define("DIESUFFIX", "</p>\n");
 define("DEBUGPREFIX", "<p class=\"debug\">");
 define("DEBUGSUFFIX", "</p>\n");
 
+/**
+ * Include miscelaneous function declarations here (may be used below)
+ */
 require_once('functions.inc');
 
 
 define("TEMPDIR","/tmp/");
 define("COMICDIR", "comics");
 define("MIMETYPE",'mimetype --database=/sw/share/mime -b '); /* flags set for mimetype program */
+define("DEFAULT_RETURN","index.php");
 
 define("APPBOTTOMDIR",'comicgetter');	/* base directory of application -- if you change the application location or name, you must change this */
 

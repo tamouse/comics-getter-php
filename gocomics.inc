@@ -3,7 +3,7 @@
 /**
  * Functions for parsing comics page at gocomics.com
  *
- * @author Tamara Temple
+ * @author Tamara Temple <tamara@tamaratemple.com>
  * @version $Id$
  * @copyright Tamara Temple Development, 28 October, 2010
  * @package default
@@ -22,7 +22,7 @@ require_once('simple_html_dom.php');
  * @return Array(
  *		comicdate - timestamp of comic's date
  *		imgsrc - source url for comic's image
- * @author Tamara Temple
+ * @author Tamara Temple <tamara@tamaratemple.com>
  **/
 function parse_gocomics($uri)
 {

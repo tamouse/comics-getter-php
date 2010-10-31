@@ -3,7 +3,7 @@
 /**
  * Delete a subscription from the database
  *
- * @author Tamara Temple
+ * @author Tamara Temple <tamara@tamaratemple.com>
  * @version $Id$
  * @copyright Tamara Temple Development, 29 October, 2010
  * @package comicgetter
@@ -23,7 +23,7 @@ require_once('config.inc');
  * Delete the subscription given by the $id
  *
  * @return success or failure
- * @author Tamara Temple
+ * @author Tamara Temple <tamara@tamaratemple.com>
  **/
 function deletesubscription($id=0)
 {

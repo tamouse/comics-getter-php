@@ -3,7 +3,7 @@
 /**
  * Add or Edit a subscription to the database
  *
- * @author Tamara Temple
+ * @author Tamara Temple <tamara@tamaratemple.com>
  * @version $Id$
  * @copyright Tamara Temple Development, 29 October, 2010
  * @package comicgetter
@@ -41,7 +41,7 @@ if (isset($_GET['action'])) {
  * Save the subscription after it's been validated
  *
  * @return id - subscription id of last subscription entered
- * @author Tamara Temple
+ * @author Tamara Temple <tamara@tamaratemple.com>
  **/
 function save_subscription($name,$uri,$id=0)
 {
@@ -69,7 +69,7 @@ function save_subscription($name,$uri,$id=0)
  * validates the name field that was input
  *
  * @return cleaned up $name
- * @author Tamara Temple
+ * @author Tamara Temple <tamara@tamaratemple.com>
  **/
 function validatename($name)
 {
@@ -88,7 +88,7 @@ function validatename($name)
  * validates the uri field that was input
  *
  * @return cleaned up $uri
- * @author Tamara Temple
+ * @author Tamara Temple <tamara@tamaratemple.com>
  **/
 function validateuri($uri)
 {

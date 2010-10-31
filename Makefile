@@ -13,6 +13,7 @@ DEPENDENCIES.txt \
 Makefile \
 addeditsubscription.php \
 db_init.inc \
+deletecomics.php \
 deletesubscription.php \
 functions.inc \
 getcomic.php \
@@ -22,6 +23,7 @@ mngcomics.php \
 rss.php \
 sample-config.inc \
 schema.sql \
+showcomics.php \
 style.css \
 subscriptions.php \
 .gitignore \
@@ -29,6 +31,7 @@ admin/clean_config.pl \
 images/delete.jpg \
 images/edit.jpg \
 templates/addeditsubscriptionform.tpl \
+templates/deletecomics.tpl \
 templates/deletesubscription.tpl \
 templates/errors.tpl \
 templates/footer.tpl \
@@ -39,6 +42,7 @@ templates/mngcomics.tpl \
 templates/nav.tpl \
 templates/newcomics.tpl \
 templates/rss.tpl \
+templates/showcomics.tpl \
 templates/subscriptions.tpl \
 tests/testSHD.php
 

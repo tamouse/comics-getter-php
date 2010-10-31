@@ -7,7 +7,7 @@
  * the returned HTML will be called, rendering the current comic's image source URI.
  * The image will be retrieved and stored locally, with the stored image's file path saved in the data base.
  *
- * @author Tamara Temple
+ * @author Tamara Temple <tamara@tamaratemple.com>
  * @version $Id$
  * @copyright Tamara Temple Development, 28 October, 2010
  * @package comicgetter
@@ -28,7 +28,7 @@ require_once('gocomics.inc');
  * Determine the extension of the file by checking it's mimetype
  *
  * @return ext - string
- * @author Tamara Temple
+ * @author Tamara Temple <tamara@tamaratemple.com>
  **/
 function determine_extension($fn)
 {
@@ -60,7 +60,7 @@ function determine_extension($fn)
  * Pull the comic image and save locally
  *
  * @return file_spec - APP_ROOT relative path to file retrieved
- * @author Tamara Temple
+ * @author Tamara Temple <tamara@tamaratemple.com>
  **/
 function pull_comic($name, $date, $imguri)
 {
@@ -96,7 +96,7 @@ function pull_comic($name, $date, $imguri)
  * Save the comic just fetched in the database
  *
  * @return id of comic just inserted
- * @author Tamara Temple
+ * @author Tamara Temple <tamara@tamaratemple.com>
  **/
 function save_comic($comic_id, $comic_date, $imgsrc, $filespec)
 {

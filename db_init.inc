@@ -1,6 +1,19 @@
 <?php
 
 /**
+ * db_init - initialize the database connection
+ *
+ * @author Tamara Temple tamouse@gmail.com
+ * @version $Id$
+ * @copyright Tamara Temple Development, 31 October, 2010
+ * @package comicgetter
+ **/
+
+/**
+ * Define DocBlock
+ **/
+
+/**
  * Initialize the data base connection.
  * We're using mysqli OO form
  */

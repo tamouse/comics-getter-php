@@ -3,7 +3,7 @@
 /**
  * Manage subscriptions in the database
  *
- * @author Tamara Temple
+ * @author Tamara Temple <tamara@tamaratemple.com>
  * @version $Id$
  * @copyright Tamara Temple Development, 28 October, 2010
  * @package comicgetter

@@ -12,6 +12,8 @@
 			<span class="comicdate">{$comic.comicdate}</span>
 			<br />
 			<a href="{$comic.uri}"><img src="{$smarty.const.APP_URI_BASE}{$comic.filespec}" alt="{$comic.name} {$comic.comicdate}"  /> </a>
+			<br />
+			<a href="showcomics.php?sid={$comic.subscription_id}{if !empty($additional_query_string)}&{$additional_query_string}{/if}">Show all comics for this subscription</a>
 		</li>
 	{/foreach}</ul>
 	{else}
