@@ -25,21 +25,31 @@ require_once('gocomics.inc');
  *********************************************************/
 
 /**
- * Determine the extension of the file by examining the output from the system command file(1)
+ * Determine the extension of the file by checking it's mimetype
  *
- * @return extension - string
+ * @return ext - string
  * @author Tamara Temple
  **/
 function determine_extension($fn)
 {
-	$cmd = "file \"".escapeshellcmd($fn)."\"";
+	$cmd = MIMETYPE." ".escapeshellcmd($fn)." 2>/dev/null";
 	$result = `$cmd`;
-	$found = preg_match('/(gif|jpe?g|png)/i',$result, $matches);
-	if ($found) {
-		$ext=strtolower($matches[0]);
-		$ext=preg_replace('/jpeg/i','jpg',$ext);
-	} else {
-		$ext='dat';
+	switch ($result) {
+		case 'image/jpeg':
+			$ext = "jpg";
+			break;
+		
+		case 'image/gif':
+			$ext = "gif";
+			break;
+			
+		case 'image/png':
+			$ext = "png";
+			break;
+			
+		default:
+			$ext = "dat";
+			break;
 	}
 	return $ext;
 }

@@ -1,0 +1,9 @@
+comicgetter has the following dependencies:
+
+PHP 5
+MySQL 5
+
+simple_html_dom.php - http://simplehtmldom.sourceforge.net/
+File::Mimeinfo.pm - http://search.cpan.org/~pardus/File-MimeInfo-0.15/lib/File/MimeInfo.pm
+Freedesktop Shared MIME database - http://www.freedesktop.org/wiki/Software/shared-mime-info
+HTTP.php - available from pear

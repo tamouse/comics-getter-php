@@ -8,6 +8,8 @@
 #
 
 repofiles = \
+COPYING.txt \
+DEPENDENCIES.txt \
 Makefile \
 addeditsubscription.php \
 db_init.inc \

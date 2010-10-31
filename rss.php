@@ -28,8 +28,8 @@ foreach ($subscriptions as $index => $subscription) {
 	$comic = get_last_comic_pulled($subscription['id']);
 	if (isset($comic)) {
 		$comic['filesize'] = filesize(APP_ROOT.$comic['filespec']);
-		$cmd = MIMETYPE . " " . APP_ROOT.$comic['filespec'];
-		$mimetype = `$cmd 2>/dev/null`;
+		$cmd = MIMETYPE." ".escapeshellcmd(APP_ROOT.$comic['filespec'])." 2>/dev/null";
+		$mimetype = `$cmd`;
 		$comic['filetype'] = rtrim($mimetype);
 		$full_url_parts['path'] = APP_URI_BASE.$comic['filespec'];
 		$comic['fullurl'] = build_url($full_url_parts);
