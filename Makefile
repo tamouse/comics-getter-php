@@ -1,5 +1,5 @@
 #
-# Makefile for processing various aspects of application maintenace
+# Makefile for processing various aspects of application maintenance
 #
 # @author: Tamara Temple
 # @version: $Id$

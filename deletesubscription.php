@@ -63,26 +63,19 @@ if (!empty($_POST)) {
 			$messages[] = "Delete canceled.";
 			break;
 	}
-	$redirect = buildredirect("subscriptions.php");
-	debug("\$redirect: ".$redirect);
-	if (!DEBUG) header("Location: ".$redirect);
+	do_redirect("subscriptions.php");
 } else {
 	/* first pass -form not yet submitted */
 	if (!isset($_GET['id']) || $_GET['id'] < 1) {
 		/* invalid id */
 		$errors[] = 'Invalid subscription id';
-		$redirect = buildredirect("subscriptions.php");
-		debug("\$redirect: $redirect");
-		if (!DEBUG) header("Location: ".$redirect);
-		if (!DEBUG) print "<h3>should have redirected to $redirect</h3>\n";
+		do_redirect("subscriptions.php");
 	} else {
 		$id = $_GET['id'];
 		$subscription = get_one_assoc(SUBSCRIPTIONSTBL,$id);
 		if (!isset($subscription)) {
 			$errors[] = "Could not find id=$id in database.";
-			$redirect = buildredirect("subscriptions.php");
-			debug("\$redirect: ".$redirect);
-			if (!DEBUG) header("Location: ".$redirect);
+			do_redirect("subscriptions.php");
 		}
 	}
 }
@@ -91,7 +84,6 @@ if (isset($subscription)) $smarty->assign('subscription',$subscription);
 if (!empty($additional_query_parms)) {
 	$smarty->assign('additional_query_string',http_build_query($additional_query_parms));
 }
-if (isset($redirect)) $smarty->assign('redirect',$redirect);
 if (isset($messages)) $smarty->assign('messages',$messages);
 if (isset($errors)) $smarty->assign('errors',$errors);
 $smarty->display('deletesubscription.tpl');

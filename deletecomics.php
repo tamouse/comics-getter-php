@@ -28,9 +28,7 @@ if (empty($_POST)) {
 	 ***************************************************/
 	if (!isset($_GET['comics']) || empty($_GET['comics'])) {
 		$errors[] = "No comics set to delete";
-		$redirect=buildredirect("index.php");
-		debug("\$redirect=$redirect");
-		if (!DEBUG) header("Location: $redirect"); else exit("<p><a href='$redirect'>Redirect</a></p>");
+		do_redirect("index.php");
 	}
 	$comics=$_GET['comics'];
 	$in = Array();
@@ -43,34 +41,24 @@ if (empty($_POST)) {
 	}
 	if (empty($in)) {
 		$errors[] = "No valid comic_ids entered";
-		$redirect=buildredirect("index.php");
-		debug("\$redirect=$redirect");
-		if (!DEBUG) header("Location: $redirect"); else exit("<p><a href='$redirect'>Redirect</a></p>");
+		do_redirect("index.php");
 	}
 	/* we should have a good list of comic ids now */
 	$sql = "SELECT ";
-	$columns[] = 'c.id';
-	$columns[] = 'c.subscription_id';
-	$columns[] = 's.name';
-	$columns[] = 's.uri';
-	$columns[] = 'c.imgsrc';
-	$columns[] = 'c.filespec';
-	$columns[] = 'c.comicdate';
-	$columns[] = 'c.pulltime';
-	$sql .= join(", ",$columns);
+	$sql .= join(", ",$csj_columns);
 	$sql .= " FROM ".COMICSTBL." as c, ".SUBSCRIPTIONSTBL." as s ";
 	$whereparts[] = 'c.id in ('.join(",",$in).')'; /* the set of comics to gather */
 	$whereparts[] = 'c.subscription_id=s.id';
 	$sql .= " WHERE ".join(" AND ",$whereparts);
+	$sql .= " ORDER BY s.name,c.comicdate";
+
 	
 	debug("\$sql=$sql");
 
 	$result=$db->query($sql);
 	if ($result === FALSE) {
 		$errors[] = "Getting selected comics failed: \$sql=$sql. Error=".$db->error;
-		$redirect=buildredirect("index.php");
-		debug("\$redirect=$redirect");
-		if (!DEBUG) header("Location: $redirect"); else exit("<p><a href='$redirect'>Redirect</a></p>");
+		do_redirect("index.php");
 	}
 
 	$comics = Array();
@@ -88,9 +76,7 @@ if (empty($_POST)) {
 	debug_var("\$comics=",$comics);
 	if (empty($comics)) {
 		$messages[] = "No comics found to be deleted.";
-		$redirect=buildredirect("index.php");
-		debug("\$redirect=$redirect");
-		if (!DEBUG) header("Location: $redirect"); else exit("<p><a href='$redirect'>Redirect</a></p>");
+		do_redirect("index.php");
 	}
 	
 
@@ -160,7 +146,5 @@ if (empty($_POST)) {
 	} else {
 		$messages[] = "Deletion canceled";
 	}
-	$redirect=buildredirect("index.php");
-	debug("\$redirect=$redirect");
-    if (!DEBUG)	header("Location: $redirect"); else exit("<p><a href='$redirect'>Redirect</a></p>");
+	do_redirect("index.php");
 }

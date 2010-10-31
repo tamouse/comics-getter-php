@@ -26,7 +26,7 @@ if (isset($_GET['errors'])) {
 	$errors = $_GET['errors'];
 }
 
-$subscriptions = get_all_array(SUBSCRIPTIONSTBL);
+$subscriptions = get_all_array(SUBSCRIPTIONSTBL,array('sort'=>'name'));
 
 $smarty->assign('additional_query_string',http_build_query($additional_query_parms));
 if (isset($messages)) $smarty->assign('messages',$messages);

@@ -109,6 +109,20 @@ function debug_var($msg,$var)
 }
 
 /**
+ * perform a redirect to the indicated url $u, applying other paramters as needed.
+ *
+ * @return none - will either redirect or exit
+ * @author Tamara Temple
+ **/
+function do_redirect($u)
+{
+	if (!isset($u)) $u = DEFAULT_REDIRECT;
+	$u = buildredirect($u);
+	debug("Redirect: \$u=$u");
+	if (!DEBUG) header("Location: $u"); else exit("<p><a href='$u'>Redirect to $u</a></p>");
+}
+
+/**
  * Emit a fatal error message to the log and output, and die
  *
  * @return void
@@ -127,10 +141,39 @@ function emit_fatal_error($msg)
  * @return indexed array of records as associative arrays
  * @author Tamara Temple <tamara@tamaratemple.com>
  **/
-function get_all_array($tblname)
+function get_all_array($tblname,$options=NULL)
 {
 	global $db;
+	if (isset($options)) {
+		debug_var("get_all_array \$options:",$options);
+		foreach ($options as $key => $value) {
+			switch ($key) {
+				case 'sort':
+					if (is_array($value)) {
+						$orderparts = $value;
+					} else {
+						$orderparts[] = $value;
+					}
+					break;
+				
+				case 'where':
+					if (is_array($value)) {
+						$whereparts = $value;
+					} else {
+						$whereparts[] = $value;
+					}
+					break;
+					
+				default:
+					# code...
+					break;
+			}
+		}
+	}
 	$sql = "SELECT * FROM $tblname";
+	if (isset($whereparts)) $sql .= " WHERE ".join(" AND ",$whereparts);
+	if (isset($orderparts)) $sql .= " ORDER BY ".join(",",$orderparts);
+	debug("get_all_array \$sql=$sql");
 	$result=$db->query($sql);
 	if ($result === FALSE) emit_fatal_error("Could not retrieve rows from $tblname. \$sql=$sql. error=".$db->error);
 	$all_rows = Array();
@@ -157,24 +200,15 @@ function get_all_array($tblname)
  **/
 function get_last_comic_pulled($subscription_id)
 {
-	global $db;
+	global $db,$csj_columns;
 	$sql 		= "SELECT ";
-	$columns[]	= 'c.`id`';
-	$columns[]	= 'c.`subscription_id`';
-	$columns[]	= 's.`name`';
-	$columns[]	= 's.`uri`';
-	$columns[]	= 'c.`imgsrc`';
-	$columns[]	= 'c.`filespec`';
-	$columns[]	= 'c.`comicdate`';
-	$columns[]	= 'c.`pulltime`';
-	$sql 		.= join(", ", $columns);
+	$sql 		.= join(", ", $csj_columns);
 	$sql 		.= " FROM " . COMICSTBL . " as c, " . SUBSCRIPTIONSTBL . " as s ";
 	$sql		.= " WHERE ";
 	$wherebits[] = "comicdate=(select MAX(comicdate) from ".COMICSTBL." where subscription_id=".$subscription_id.")";
 	$wherebits[] = "c.subscription_id=" . $subscription_id;
 	$wherebits[] = "c.subscription_id=s.id";
 	$sql		.= join(" AND ",$wherebits);
-	$sql		.= " GROUP BY s.name ";
 	$sql		.= " LIMIT 1";
 	$result = $db->query($sql);
 	if ($result === FALSE) 
@@ -190,7 +224,7 @@ function get_last_comic_pulled($subscription_id)
 }
 
 /**
- * Get a single record given the $sql input
+ * Get a single record given the $id of the record
  *
  * @return single record returned as associative array
  * @author Tamara Temple <tamara@tamaratemple.com>
@@ -266,15 +300,7 @@ function get_this_comic($comic_id)
 {
 	global $db;
 	$sql 		= "SELECT ";
-	$columns[]	= 'c.`id`';
-	$columns[]	= 'c.`subscription_id`';
-	$columns[]	= 's.`name`';
-	$columns[]	= 's.`uri`';
-	$columns[]	= 'c.`imgsrc`';
-	$columns[]	= 'c.`filespec`';
-	$columns[]	= 'c.`comicdate`';
-	$columns[]	= 'c.`pulltime`';
-	$sql 		.= join(', ', $columns);
+	$sql 		.= join(', ', $csj_columns);
 	$sql 		.= ' FROM ' . COMICSTBL . ' as c, ' . SUBSCRIPTIONSTBL . ' as s ';
 	$sql		.= ' WHERE ';
 	$where_parts[] = 'c.`id`=' . $comic_id;

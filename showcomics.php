@@ -19,34 +19,25 @@ if (isset($_GET['sid']) && !empty($_GET['sid']) && is_numeric($_GET['sid'])) {
 	$sid = $_GET['sid'];
 } else {
 	$errors[] = __FILE__." (".__LINE__.") ".'Invalid Subscription ID: '.(!isset($_GET['sid']) ? "not set" : (empty($_GET['sid']) ? "empty" : $_GET['sid']));
-	$redirect=buildredirect("index.php");
-	header("Location: $redirect");
+	do_redirect("index.php");
 }
 
 $subscription = get_one_assoc(SUBSCRIPTIONSTBL,$sid);
 debug_var("\$subscription=",$subscription);
 
 $sql = "SELECT ";
-$columns[] = 'c.id';
-$columns[] = 'c.subscription_id';
-$columns[] = 's.name';
-$columns[] = 's.uri';
-$columns[] = 'c.imgsrc';
-$columns[] = 'c.filespec';
-$columns[] = 'c.comicdate';
-$columns[] = 'c.pulltime';
-$sql .= join(", ",$columns);
+$sql .= join(", ",$csj_columns);
 $sql .= " FROM ".COMICSTBL." as c, ".SUBSCRIPTIONSTBL." as s ";
 $whereparts[] = 'c.subscription_id='.$sid;
 $whereparts[] = 'c.subscription_id=s.id';
 $sql .= " WHERE ".join(" AND ",$whereparts);
+$sql .= " ORDER BY c.comicdate desc";
 debug("\$sql=$sql");
 
 $result=$db->query($sql);
 if ($result === FALSE) {
 	$errors[] = __FILE__." (".__LINE__.") "."Get all comics for subscription $sid failed: \$sql=$sql. Error=".$db->error;
-	$redirect=buildredirect("index.php");
-	header("Location: $redirect");
+	do_redirect("index.php");
 }
 
 $comics = Array();

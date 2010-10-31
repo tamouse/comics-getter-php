@@ -82,7 +82,7 @@ require_once('functions.inc');
 define("TEMPDIR","/tmp/");
 define("COMICDIR", "comics");
 define("MIMETYPE",'mimetype --database=/sw/share/mime -b '); /* flags set for mimetype program */
-define("DEFAULT_RETURN","index.php");
+define("DEFAULT_REDIRECT","index.php");
 
 define("APPBOTTOMDIR",'comicgetter');	/* base directory of application -- if you change the application location or name, you must change this */
 
