@@ -17,9 +17,9 @@ deletecomics.php \
 deletesubscription.php \
 functions.inc \
 getcomic.php \
-gocomics.inc \
 index.php \
 mngcomics.php \
+parserengines.inc \
 rss.php \
 sample-config.inc \
 schema.sql \
@@ -44,6 +44,7 @@ templates/newcomics.tpl \
 templates/rss.tpl \
 templates/showcomics.tpl \
 templates/subscriptions.tpl \
+tests/testcurl.php \
 tests/testSHD.php
 
 

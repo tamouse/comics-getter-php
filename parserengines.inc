@@ -1,12 +1,12 @@
 <?php
 
 /**
- * Functions for parsing comics page at gocomics.com
+ * Engines for parsing comics pages
  *
  * @author Tamara Temple <tamara@tamaratemple.com>
  * @version $Id$
  * @copyright Tamara Temple Development, 28 October, 2010
- * @package default
+ * @package comicgetter
  **/
 
 /**
@@ -82,4 +82,37 @@ function parse_gocomics($uri)
 	$html->clear();
 	unset($html);
 	return Array($comicdate, $imgsrc);
+}
+
+
+
+/**
+ * Parse the comic page at sinfest.net
+ *
+ * @return array($comicdate, $imgsrc)
+ * @author Tamara Temple
+ **/
+function parse_sinfest($uri)
+{
+	global $errors, $messages;
+	
+	$html = new simple_html_dom();
+	$html->load_file($uri);
+	$imgs = $html->find('img');
+	foreach ($imgs as $img) {
+		$src=$img->src;
+		if (preg_match('/comikaze/',$src)) {
+			// this is the image source
+			debug("\$src=$src");
+			$imgsrc=$src;
+			$srcparts = parse_url($src);
+			$filename=basename($srcparts['path'],'.gif');
+			debug("\$filename=$filename");
+			$comicdate = strtotime($filename);
+			debug("\$comicdate=$comicdate");
+			break; /* we got a match, we're done */			
+		}
+	}
+	if (isset($comicdate) && isset($imgsrc)) return  array($comicdate, $imgsrc);
+	return NULL;
 }

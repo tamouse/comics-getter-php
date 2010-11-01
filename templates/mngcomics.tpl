@@ -18,7 +18,7 @@
 					<th width="30%">Pull Time</th>
 				</tr>
 				{foreach from=$comics item=comic}
-				<tr>
+				<tr class="{cycle values="odd,even"}">
 					<td><input type="checkbox" name="comics[]" value="{$comic.id}" /></td>
 					<td>{$comic.comicdate}</td>
 					<td>{$comic.filespec}</td>

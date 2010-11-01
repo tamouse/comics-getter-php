@@ -66,11 +66,14 @@ div#content table td {
 	padding: 5px;
 	border: 1px solid #333;
 }
-div#content table tr odd {
+.odd {
 	background-color: white;
 }
-div#content table tr even {
+.even {
 	background-color: #CFF;
+}
+.oddhighlight, .evenhighlight {
+	background-color: #FCC;
 }
 .error {
 	color: red;

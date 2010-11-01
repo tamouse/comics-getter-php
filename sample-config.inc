@@ -124,7 +124,8 @@ $full_url_parts = array('scheme'=>'http','host'=>$_SERVER['SERVER_NAME'],'port'=
  */
 $parse_engines =
 	array(
-		array('match'=>'gocomics.com','engine'=>'parse_gocomics')
+		array('match'=>'gocomics.com','engine'=>'parse_gocomics'),
+		array('match'=>'sinfest.net','engine'=>'parse_sinfest')
 	);
 
 

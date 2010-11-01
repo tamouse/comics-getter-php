@@ -18,7 +18,7 @@
  **/
 
 require_once('config.inc');
-require_once('gocomics.inc');
+require_once('parserengines.inc');
 
 /*********************************************************
  * FUNCTIONS
@@ -33,7 +33,9 @@ require_once('gocomics.inc');
 function determine_extension($fn)
 {
 	$cmd = MIMETYPE." ".escapeshellcmd($fn)." 2>/dev/null";
-	$result = `$cmd`;
+	debug("\$cmd=$cmd");
+	$result = rtrim(`$cmd`);
+	debug("\$result=$result");
 	switch ($result) {
 		case 'image/jpeg':
 			$ext = "jpg";
@@ -64,7 +66,7 @@ function determine_extension($fn)
  **/
 function pull_comic($name, $date, $imguri)
 {
-	global $messages;
+	global $messages,$errors;
 	$ch = curl_init();
 	$fn = tempnam(TEMPDIR, "comic");
 	debug("\$fn=$fn");
@@ -73,17 +75,28 @@ function pull_comic($name, $date, $imguri)
 		CURLOPT_URL => $imguri,
 		CURLOPT_USERAGENT => "Mozilla/5.0",
 		CURLOPT_FILE => $fh,
-		CURLOPT_HEADER => FALSE
-		);
+		CURLOPT_HEADER => FALSE,
+		CURLOPT_FOLLOWLOCATION => TRUE,
+		CURLOPT_MAXREDIRS => '10'
+	);
 	curl_setopt_array($ch, $options);
 	if (curl_exec($ch) === FALSE) {
 		$error_msg = "Unable to retrieve $imgurl: ".curl_error($ch);
 		error_log($error_msg);
-		$messages[] = $error_msg;
+		$errors[] = $error_msg;
 	}
 	fclose($fh);
+	curl_close($ch);
 	if (file_exists($fn)) {
+		chmod($fn,0666);
 		$ext = determine_extension($fn);
+		debug("\$ext=$ext");
+		if ($ext == 'dat') {
+			$error_msg = "File retrieved $fn is not an image type of file";
+			$errors[] = $error_msg;
+			error_log($error_msg);
+			return NULL;
+		}
 		$savefn = COMICDIR."/".preg_replace('/\s+/','_',$name).".".date("YMd",$date).".".$ext;
 		rename($fn, APP_ROOT.$savefn);
 		return $savefn;
@@ -135,6 +148,7 @@ foreach ($subscriptions as $key => $subscription) {
 		sleep (DELAY_TIME);
 		$delays++;
 	}
+	debug_var("\$subscription:",$subscription);
 	$engine = get_parse_engine($subscription['uri']);
 	if (isset($engine)) {
 		list ($comic_date, $imgsrc) = $engine($subscription['uri']);
@@ -142,14 +156,18 @@ foreach ($subscriptions as $key => $subscription) {
 			$lastcomic = get_last_comic_pulled($subscription['id']);
 			if ($comic_date > strtotime($lastcomic['comicdate'])) {
 				$filespec = pull_comic($subscription['name'],$comic_date,$imgsrc);
-				$id = save_comic($subscription['id'], $comic_date, $imgsrc, $filespec);
-				$comic_ids[] = $id;
+				if (isset($filespec)) {
+					$id = save_comic($subscription['id'], $comic_date, $imgsrc, $filespec);
+					$comic_ids[] = $id;
+				} else {
+					$errors[] = "No comic image retrieved from ".$imgsrc;
+				}
 			}
 		} else {
-			$messages[] = "No comic image in page at ".$subscription['uri'];
+			$errors[] = "No comic image in page at ".$subscription['uri'];
 		}
 	} else {
-		$messages[] = "No parse engine for ".$subscription['uri'];
+		$errors[] = "No parse engine for ".$subscription['uri'];
 	}
 
 	
@@ -178,7 +196,8 @@ if (NOHTML) {
 }
 
 $smarty->assign('additional_query_string',http_build_query($additional_query_parms));
-$smarty->assign('messages',$messages);
+if (!empty($messages)) $smarty->assign('messages',$messages);
+if (!empty($errors)) $smarty->assign('errors',$errors);
 $smarty->assign('elapsed_time',$elapsed_time);
 $smarty->assign('delays',$delays);
 $smarty->assign('num_comics_retrieved',count($comics_retrieved));

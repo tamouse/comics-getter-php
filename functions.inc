@@ -188,7 +188,6 @@ function get_all_array($tblname,$options=NULL)
 		}
 	}
 	$result->free();
-	debug_var("All rows returned from get_all_array(".$tblname.")",$all_rows);
 	return $all_rows;
 }
 
@@ -219,7 +218,6 @@ function get_last_comic_pulled($subscription_id)
 		$row = NULL;
 	}
 	$result->free();
-	debug_var("last comic pulled row:",$row);
 	return $row;
 }
 
@@ -237,7 +235,6 @@ function get_one_assoc($tbl,$id)
 	if ($result === FALSE) emit_fatal_error("Could not execute \$sql=$sql: error=".$db->error);
 	$row = $result->fetch_assoc();
 	$result->free();
-	debug_var("Row returned from $sql:",$row);
 	return $row;
 }
 
@@ -298,7 +295,7 @@ function get_referer()
  **/
 function get_this_comic($comic_id)
 {
-	global $db;
+	global $db,$csj_columns;
 	$sql 		= "SELECT ";
 	$sql 		.= join(', ', $csj_columns);
 	$sql 		.= ' FROM ' . COMICSTBL . ' as c, ' . SUBSCRIPTIONSTBL . ' as s ';

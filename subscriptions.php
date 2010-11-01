@@ -25,12 +25,17 @@ if (isset($_GET['messages'])) {
 if (isset($_GET['errors'])) {
 	$errors = $_GET['errors'];
 }
+if (isset($_GET['id'])) $highlight_id = $_GET['id'];
 
 $subscriptions = get_all_array(SUBSCRIPTIONSTBL,array('sort'=>'name'));
 
-$smarty->assign('additional_query_string',http_build_query($additional_query_parms));
+if (isset($additional_query_parms)) {
+	$smarty->assign('additional_query_string',http_build_query($additional_query_parms));
+	$smarty->assign('additional_query_parms',$additional_query_parms);
+}
 if (isset($messages)) $smarty->assign('messages',$messages);
 if (isset($errors)) $smarty->assign('errors',$errors);
+if (isset($highlight_id)) $smarty->assign('highlight_id',$highlight_id);
 $smarty->assign('subscriptions', $subscriptions);
 $smarty->assign('title', "Manage Subscriptions");
 $smarty->display('subscriptions.tpl');

@@ -37,7 +37,7 @@ function save_subscription($name,$uri,$id=0)
 	$sql = (ACTION == 'NEW' ? "INSERT INTO" : "UPDATE")." ".SUBSCRIPTIONSTBL." SET ";
 	$columns[]	= '`name`='."'".$name."'";
 	$columns[]	= '`uri`='."'".$uri."'";
-	if (ACTION == 'new') $columns[]	= '`created`=NOW()';
+	if (ACTION == 'NEW') $columns[]	= '`created`=NOW()';
 	$columns[]	= '`updated`=NOW()';
 	$sql .= join(", ",$columns);
 	if (ACTION == 'EDIT') {
@@ -45,9 +45,10 @@ function save_subscription($name,$uri,$id=0)
 	}
 	debug("\$sql=$sql");
 	$result = $db->query($sql);
-	if ($result === FALSE) {
+	if (!$result) {
 		emit_fatal_error("Could not ".(ACTION == 'NEW' ? "insert new" : "update")." subscription into database: \$sql=$sql. error=".$db->error);
 	}
+	debug("\$result=$result");
 	return (ACTION == 'NEW' ? $db->insert_id : $id);
 }
 
@@ -99,6 +100,7 @@ function validateuri($uri)
 		return NULL;
 	}
 	$headers = HTTP::head($uri); /* Verify that the URI exists */
+	debug_var("\$headers",$headers);
 	if (get_class($headers) == 'PEAR_Error') {
 		$errors[] = "Invalid URI.";
 		return NULL;
@@ -145,6 +147,8 @@ if (!empty($_POST)) {
 	if (empty($errors)) {
 		/* no validation errors */
 		$id = save_subscription($name, $uri, $id);
+		debug("inserted/updated \$id=$id");
+		$additional_query_parms['id'] = $id;
 		$messages[] = "subscription saved.";
 		do_redirect("subscriptions.php");
 	}
