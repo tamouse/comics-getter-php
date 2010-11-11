@@ -102,8 +102,8 @@ function debug_var($msg,$var)
 {
 	if (DEBUG) {
 		echo DEBUGPREFIX . "DEBUG: $msg" . DEBUGSUFFIX;
-		echo "<pre>\n";
-		print_r($var);
+		echo "<pre class=\"debug\">\n";
+		var_dump($var);
 		echo "</pre>\n";
 	}
 }

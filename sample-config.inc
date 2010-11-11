@@ -84,32 +84,8 @@ define("COMICDIR", "comics");
 define("MIMETYPE",'mimetype --database=/sw/share/mime -b '); /* flags set for mimetype program */
 define("DEFAULT_REDIRECT","index.php");
 
-define("APPBOTTOMDIR",'comicgetter');	/* base directory of application -- if you change the application location or name, you must change this */
-
-/**
- * Get the Application Root directory path. Used for finding files and directories on the server's file system
- */
-$script_path_arr = split('/', $_SERVER['SCRIPT_FILENAME']); /* get the elements of the path to the current script */
-$app_path_arr = Array();
-foreach ($script_path_arr as $script_path_element) {
-	$app_path_arr[] = $script_path_element;
-	if ($script_path_element == APPBOTTOMDIR) break; /* stop processing when we get to the application base dir */
-}
-define("APP_ROOT", join('/',$app_path_arr) . '/'); /* path to application root */
-//debug("APP_ROOT=".APP_ROOT);
-
-/**
- * Get the Application URI path. Used for creating URI's for elements in the application that are called through the web server
- */
-$script_uri_path_arr = split('/', $_SERVER['SCRIPT_NAME']); /* get the elements of the URI path to the current script */
-//debug_var("\$script_uri_path_arr",$script_uri_path_arr);
-foreach ($script_uri_path_arr as $script_uri_path_element) {
-	$app_uri_base_arr[] = $script_uri_path_element;
-	if ($script_uri_path_element == APPBOTTOMDIR) break; /* stop processing when we get to the application base dir */
-}
-//debug_var("\$app_uri_base_arr",$app_uri_base_arr);
-define("APP_URI_BASE", join('/',$app_uri_base_arr) . '/'); /* use this in links and images to refer to the application base */
-//debug("APP_URI_BASE=".APP_URI_BASE);
+define('APP_ROOT', dirname(__FILE__));
+define('APP_URI_BASE', isset($_SERVER['SCRIPT_NAME']) ? dirname($_SERVER['SCRIPT_NAME'] : ''));
 
 define("APP_NAME",'comicgetter');
 
