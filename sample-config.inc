@@ -84,10 +84,13 @@ define("COMICDIR", "comics");
 define("MIMETYPE",'mimetype --database=/sw/share/mime -b '); /* flags set for mimetype program */
 define("DEFAULT_REDIRECT","index.php");
 
-define('APP_ROOT', dirname(__FILE__));
-define('APP_URI_BASE', isset($_SERVER['SCRIPT_NAME']) ? dirname($_SERVER['SCRIPT_NAME'] : ''));
+define('APP_ROOT', dirname(__FILE__) . DIRECTORY_SEPARATOR);
+debug_var('APP_ROOT:',APP_ROOT);
+debug_var('__FILE__:',__FILE__);
+define('APP_URI_BASE', isset($_SERVER['SCRIPT_NAME']) ? dirname($_SERVER['SCRIPT_NAME']) . DIRECTORY_SEPARATOR : '');
 
 define("APP_NAME",'comicgetter');
+
 
 /**
  * Use this to create fully qualified URLs by adding the path element
