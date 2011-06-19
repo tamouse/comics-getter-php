@@ -7,14 +7,29 @@
  * @version $Id$
  * @copyright Tamara Temple Development, 28 October, 2010
  * @package comicgetter
+ *
+ * CHANGED: parse functions now fetch the contents using fetch_url_curl (functions.inc) instead of directly loading in the $html object
+ *
+ *
  **/
 
 /**
  * Define DocBlock
  **/
 
-require_once('simple_html_dom.php');
+require_once('simple_html_dom.php');  // NOTE: documentation is at http://simplehtmldom.sourceforge.net/manual.htm
 
+/**
+ * Parse a comic page at comics.com
+ * 
+ * CHANGED: comics.com now redirects to gocomics.com
+ * @return whatever parse_gocomics gives us
+ * @author Tamara Temple <tamara@tamaratemple.com>
+ */
+function parse_comics($uri)
+{
+	return parse_gocomics($url);
+}
 
 /**
  * Parse the a comic page at gocomics.com
@@ -27,60 +42,55 @@ require_once('simple_html_dom.php');
 function parse_gocomics($uri)
 {
 	global $errors;
+	if (empty($uri)) {
+		$errors[]="Parameter uri not set on entry to parse_gocomics";
+		return NULL;
+	}
+	$comicdate=NULL;
+	$imgsrc=NULL;	
+	// CHANGED: gocomics changed the way they present the comics on the comic's page. 
+	debug(basename(__FILE__).'@'.__LINE__." enter parse_gocomics. uri=$uri");
 	$html = new simple_html_dom();
-	$html->load_file($uri);
-	$feature = $html->find("div.feature",0);
-	if (!isset($feature)) {
-		$errors[] = "Can not find div.feature in html source $uri";
-		return FALSE;
+	$contents = fetch_url_curl($uri);
+	if (!$contents || empty($contents)) {
+		$errors[]="No contents at $uri";
+		return NULL;		
 	}
-	//debug_var("\$feature=",htmlentities($feature->outertext));
-	$comicdate_element = $feature->find("li",0); /* comic date is first list item in feature div */
-	if (!isset($comicdate_element)) {
-		$errors[] = "Can not find comic date in html source $uri";
-		return FALSE;
+	$html->load($contents);
+	debug(basename(__FILE__).'@'.__LINE__." uri retrieved: ".htmlspecialchars(substr($html,0,50).'...'));
+	$feature_item_container = $html->find('p.feature_item',0); // retrieve the comic reference
+	debug(basename(__FILE__).'@'.__LINE__.' feature_item_container='.htmlspecialchars($feature_item_container));
+	if (!$feature_item_container) {
+		$errors[]="Could not find p.feature_item in $uri";
+		return NULL;
 	}
-	debug_var("\$comicdate_element=",htmlentities($comicdate_element));
-	$comicdate = strtotime($comicdate_element->plaintext);
-	debug("\$comicdate=$comicdate");
-	$image_par = $feature->find("p.feature_item",0);
-	if (!isset($image_par)) {
-		$errors[] = "Can not find image paragraph in html source $uri";
-		return FALSE;
+	$feature_item_img = $feature_item_container->find('img',0);
+	debug(basename(__FILE__).'@'.__LINE__.' feature_item_img='.htmlspecialchars($feature_item_img));
+	if (!feature_item_img) {
+		$errors[]="Could not find img in p.feature_item in $uri";
+		return NULL;
 	}
-	debug_var("\$image_par=",htmlentities($image_par));
-	$image_element = $image_par->find("a",0);
-	if (!isset($image_element)) {
-		$errors[] = "Can not find image element in html source $uri";
-		if (NOHTML) {
-			$errors[] = "\$image_par=$image_par";
-		} else {
-			$errors[] = "\$image_par=".htmlentities($image_par);
-		}
-		return FALSE;
+	$imgsrc=$feature_item_img->src;
+	debug(basename(__FILE__).'@'.__LINE__.' imgsrc='.$imgsrc);
+	if (!$imgsrc) {
+		$errors[]="Could not find src attribute in img in p.feature_item in $uri";
+		return NULL;
 	}
-	debug_var("\$image_element=",htmlentities($image_element));
-	if (isset($image_element->href)) {$imgsrc = $image_element->href;}
-	else {
-		$errors[] = "No image source in image element in html source $uri";
-		if (NOHTML) {
-			$errors[] = "\$image_element=".$image_element;
-		} else {
-			$errors[] = "\$image_element=".htmlentities($image_element);
-		}
-		return FALSE;
+	$feature_nav = $html->find('ul.feature-nav li',0); // retrieve the container for the date
+	debug(basename(__FILE__).'@'.__LINE__.' feature_nav='.htmlspecialchars($feature_nav));
+	if (!$feature_nav) {
+		$errors[]="Could not find ul.feature-nav li in $uri";
+		return NULL;
 	}
-	debug("\$imgsrc=$imgsrc");
-	$image_element->clear();
-	unset($image_element);
-	$image_par->clear();
-	unset($image_par);
-	$comicdate_element->clear();
-	unset($comicdate_element);
-	$feature->clear();
-	unset($feature);
-	$html->clear();
-	unset($html);
+	$comicdate_str = $feature_nav->innertext;
+	debug(basename(__FILE__).'@'.__LINE__." comicdate_str=$comicdate_str");
+	if (!$comicdate_str) {
+		$errors[]="Could not find innertext in feature_nav in $uri";
+		return NULL;
+	}
+	$comicdate = strtotime($comicdate_str);
+	debug(basename(__FILE__)."@".__LINE__." returning Array($comicdate (".date(DATE_RFC822,$comicdate)."), $imgsrc)  ");
+	
 	return Array($comicdate, $imgsrc);
 }
 
@@ -95,10 +105,15 @@ function parse_gocomics($uri)
 function parse_sinfest($uri)
 {
 	global $errors, $messages;
-	
+	$contents = fetch_url_curl($uri);
+	if (!$contents || empty($contents)) {
+		$errors[]="Could not retrieve contents of $uri via curl";
+		return NULL;
+	}
 	$html = new simple_html_dom();
-	$html->load_file($uri);
+	$html->load($contents);
 	$imgs = $html->find('img');
+	$foundimg=FALSE;
 	foreach ($imgs as $img) {
 		$src=$img->src;
 		if (preg_match('/comikaze/',$src)) {
@@ -110,9 +125,16 @@ function parse_sinfest($uri)
 			debug("\$filename=$filename");
 			$comicdate = strtotime($filename);
 			debug("\$comicdate=$comicdate");
+			$foundimg=TRUE;
 			break; /* we got a match, we're done */			
 		}
 	}
+	if (!$foundimg) {
+		$errors[]="No comic found in $url.";
+	} else {
+		//$messages[]="Found comic in $url. img=$imgsrc, date=".date(DATE_RFC822,$comicdate);
+	}
+	debug(basename(__FILE__).'@'.__LINE__." exiting parse_sinfest. comicdate=$comicdate (".date(DATE_RFC822,$comicdate)."). imgsrc=$imgsrc.");
 	if (isset($comicdate) && isset($imgsrc)) return  array($comicdate, $imgsrc);
 	return NULL;
 }

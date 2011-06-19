@@ -11,9 +11,9 @@
 <title>{$comic.name}</title>
 <link>{$comic.uri}</link>
 <description>{$comic.name} {$comic.comicdate}</description>
-<content:encoded><![CDATA[<font size="+1"><b>{$comic.name}</b></font> <i>{$comic.comicdate}</i><br><img src="{$comic.fullurl}"> ]]></content:encoded>
+<content:encoded><![CDATA[<font size="+1"><b>{$comic.name}</b></font> <i>{$comic.comicdate}</i><br><a href="{$comic.fullurl}"><img src="{$comic.fullurl}"></a> ]]></content:encoded>
 <enclosure url="{$comic.fullurl}" length="{$comic.filesize}" type="{$comic.filetype}" />
-<pubDate>{$comic.pubdate}</pubDate>
+<pubDate>{$comic.pulltime_str}</pubDate>
 <guid>{$comic.fullurl}</guid>
 </item>
 {/foreach}

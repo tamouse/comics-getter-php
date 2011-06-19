@@ -6,11 +6,28 @@
  * @version $Id$
  * @copyright Tamara Temple Development, 28 October, 2010
  * @package comicgetter
+ *
+ * CHANGED: 2011-06-13 tpt added fetch_url_curl function
  **/
 
 /**
  * Define DocBlock
  **/
+
+// ===========
+// = DEFINES =
+// ===========
+
+if (!defined(DEBUG)) define('DEBUG', FALSE); // in case i forget something
+
+
+if (!defined(DEBUGPREFIX)) define('DEBUGPREFIX', defined(STDIN)?'':'<p class="debug">'.PHP_EOL);
+if (!defined(DEBUGSUFFIX)) define('DEBUGSUFFIX', defined(STDIN)?'':'</p>'.PHP_EOL);
+if (!defined(DIEPREFIX)) define('DIEPREFIX', defined(STDIN)?'':'<div class="error">'.PHP_EOL);
+if (!defined(DIESUFFIX)) define('DIESUFFIX', defined(STDIN)?'':'</div>');
+
+
+
 
 /**
  * Build a redirect path including messages, errors, and additional query data
@@ -65,10 +82,16 @@ function build_url($parts)
 	if (isset($parts['port'])) {
 		$uri .= ":".$parts['port'];
 	}
+	if (isset($parts['path_prefix'])) {
+		$uri .= $parts['path_prefix'];
+	}
 	if (isset($parts['path'])) {
 		$uri .= $parts['path'];
 	} else {
 		$uri .= '/';
+	}
+	if (isset($parts['path_suffix'])) {
+		$uri .= $parts['path_suffix'];
 	}
 	if (isset($parts['query'])) {
 		$uri .= '?' . $parts['query'];
@@ -85,27 +108,31 @@ function build_url($parts)
  * @return void
  * @author Tamara Temple <tamara@tamaratemple.com>
  **/
-function debug($msg)
+function debug($msg,$var='',$file='',$line='')
 {
 	if (DEBUG) {
-		echo DEBUGPREFIX . "DEBUG: $msg" . DEBUGSUFFIX;
+		echo DEBUGPREFIX.PHP_EOL;
+		$file = basename($file);
+		if (!empty($file)) echo $file;
+		if (!empty($line)) echo '@'.$line;
+		echo "DEBUG: $msg".PHP_EOL;
+		if (!empty($var)) {
+			if (is_array($var)) {
+				echo htmlspecialchars(print_r($var,true));				
+			} else {
+				echo htmlspecialchars($var);
+			}
+		}
+		echo DEBUGSUFFIX.PHP_EOL;
 	}
 }
 
 /**
- * debug var function - dump a variable if DEBUG === TRUE
- *
- * @return void
- * @author Tamara Temple <tamara@tamaratemple.com>
+ * debug var function - DEPRICATED - use debug instead now
  **/
-function debug_var($msg,$var)
+function debug_var($msg,$var='',$file='',$line='')
 {
-	if (DEBUG) {
-		echo DEBUGPREFIX . "DEBUG: $msg" . DEBUGSUFFIX;
-		echo "<pre class=\"debug\">\n";
-		var_dump($var);
-		echo "</pre>\n";
-	}
+	debug($msg,$var,$file,$line);
 }
 
 /**
@@ -134,6 +161,42 @@ function emit_fatal_error($msg)
 	die(DIEPREFIX . "FATAL ERROR: $msg" . DIESUFFIX);
 }
 
+/**
+ * fetch the url using curl
+ *
+ * @return (string) contents of url
+ * @author Tamara Temple
+ **/
+function fetch_url_curl($url)
+{
+	global $errors;
+	
+	if (!isset($url) || empty($url)) return NULL;
+	
+	$ch = curl_init($url);
+	$options = array(
+		CURLOPT_AUTOREFERER => TRUE,
+		CURLOPT_COOKIESESSION => TRUE,
+		CURLOPT_FAILONERROR => TRUE,
+		CURLOPT_FOLLOWLOCATION => TRUE,
+		CURLOPT_HEADER => FALSE,
+		CURLOPT_RETURNTRANSFER => TRUE,
+		CURLOPT_CONNECTTIMEOUT => 30,
+		CURLOPT_TIMEOUT => 200,
+		CURLOPT_USERAGENT => 'Mozilla', // do this to fake out servers that won't do anything unless they recognize the request coming from a browser
+		
+	);
+	curl_setopt_array($ch, $options);
+	$contents = curl_exec($ch);
+	if (FALSE === $contents) {
+		$errors[]="Unable to fetch contents of $url.";
+		return NULL;
+	}
+	curl_close($ch);
+	
+	return $contents;
+	
+}
 
 /**
  * Get All records from a table, returning them in an indexed array of records as associative arrays

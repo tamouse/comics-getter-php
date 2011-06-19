@@ -1,45 +1,33 @@
 <?php
-/**
- * testcurl
- *
- * @author Tamara Temple tamouse@gmail.com
- * @version \$Id\$
- * @copyright 2010 Tamara Temple Development
- * @package default
- **/
 
-/**
- * Define DocBlock
- **/
+// Test the fetch_url_curl function
+header("Content-type: text/plain"); // don't bother with html crap
 
-define('TEMPDIR', '/tmp/');
-define("MIMETYPE",'mimetype --database=/sw/share/mime -b '); /* flags set for mimetype program */
+define("DEBUG",true);
+define("DEBUGPREFIX", "");
+define("DEBUGSUFFIX", "\n");
+define('DEBUGVARPREFIX', '');
+define('DEBUGVARSUFFIX', '');
 
-function testcurl($imguri)
-{
-	$ch = curl_init();
-	$fn = tempnam(TEMPDIR, "testcomic");
-	$fh = fopen($fn,'w');
-	$options = Array(
-		CURLOPT_URL => $imguri,
-		CURLOPT_USERAGENT => "Mozilla/5.0",
-		CURLOPT_FILE => $fh,
-		CURLOPT_HEADER => FALSE,
-		CURLOPT_FOLLOWLOCATION => TRUE,
-		CURLOPT_MAXREDIRS => '10'
-		);
-	curl_setopt_array($ch, $options);
-	if (curl_exec($ch) === FALSE) {
-		$error_msg = "Unable to retrieve $imgurl: ".curl_error($ch);
-		error_log($error_msg);
-		$messages[] = $error_msg;
-	}
-	fclose($fh);
-	curl_close($ch);
-	$cmd = MIMETYPE." ".escapeshellcmd($fn)." 2>/dev/null";
-	$result = `$cmd`;
-	echo "$fn mimetype is $result";
+error_reporting(-1);
+ini_set('display_errors', 1);
+
+
+include_once('../functions.inc');
+
+
+if (!function_exists('fetch_url_curl')) die("Function fetch_url_curl does not exist!");
+
+
+echo "Beginning test of fetch_url_curl".PHP_EOL;
+$url="http://comics.com/free_range/";
+echo "url=$url".PHP_EOL;
+$contents = fetch_url_curl($url);
+if ($contents && !empty($contents)) {
+	echo "retrieved $url via curl: ".substr($contents,0,200).PHP_EOL;
+} else {
+	echo "nothing retrieved from $url via curl".PHP_EOL;
 }
 
-testcurl("http://sinfest.net/comikaze/comics/2010-10-31.gif");
+
 ?>

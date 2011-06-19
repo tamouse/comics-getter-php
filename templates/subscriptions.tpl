@@ -28,7 +28,7 @@
 			<td>
 				{$subscription.name}
 			</td>
-			<td>{$subscription.uri}</td>
+			<td><a href="{$subscription.uri}">{$subscription.uri}</a></td>
 			<td>{$subscription.created|date_format:"%D %T"}</td>
 			<td>{$subscription.updated|date_format:"%D %T"}</td>
 		</tr>

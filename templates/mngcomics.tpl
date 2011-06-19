@@ -21,7 +21,7 @@
 				<tr class="{cycle values="odd,even"}">
 					<td><input type="checkbox" name="comics[]" value="{$comic.id}" /></td>
 					<td>{$comic.comicdate}</td>
-					<td>{$comic.filespec}</td>
+					<td><a href="{$comic.filespec}">{$comic.filespec}</a></td>
 					<td>{$comic.pulltime|date_format:"%D-%T"}</td>
 				</tr>
 				{/foreach}

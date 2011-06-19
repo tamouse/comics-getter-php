@@ -91,6 +91,12 @@ div#content table td {
 	list-style-type: none;
 	padding: 20px 0px;
 }
+.comicdate {
+	font: 75% "Lucida Grande", "Trebuchet MS", Verdana, sans-serif;
+}
+.comictitle {
+	font: 150% "Lucida Grande", "Trebuchet MS", Verdana, sans-serif;
+}
 div#confirm {
 	width:40%;
 	margin: 10px auto;

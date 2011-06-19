@@ -26,6 +26,7 @@ if (empty($subscriptions)) exit;
 $comics = Array();
 foreach ($subscriptions as $index => $subscription) {
 	$comic = get_last_comic_pulled($subscription['id']);
+	debug_var("In file ".__FILE__.": \$comic=",$comic);
 	if (isset($comic)) {
 		$comic['filesize'] = filesize(APP_ROOT.$comic['filespec']);
 		$cmd = MIMETYPE." ".escapeshellcmd(APP_ROOT.$comic['filespec'])." 2>/dev/null";
@@ -34,6 +35,7 @@ foreach ($subscriptions as $index => $subscription) {
 		$full_url_parts['path'] = APP_URI_BASE.$comic['filespec'];
 		$comic['fullurl'] = build_url($full_url_parts);
 		$comic['pubdate'] = date("r",strtotime($comic['comicdate']));
+		$comic['pulltime_str'] = date("r",strtotime($comic['pulltime']));
 		debug_var("\$comic after updates in ".__FILE__,$comic);
 		$comics[] = $comic;
 	}

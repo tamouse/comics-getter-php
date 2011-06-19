@@ -6,3 +6,5 @@ create_db.sql
 comics
 templates_c
 .DS_*
+logs/
+comicgetter.tmproj
