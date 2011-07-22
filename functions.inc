@@ -18,13 +18,13 @@
 // = DEFINES =
 // ===========
 
-if (!defined(DEBUG)) define('DEBUG', FALSE); // in case i forget something
+if (!defined('DEBUG')) define('DEBUG', FALSE); // in case i forget something
 
 
-if (!defined(DEBUGPREFIX)) define('DEBUGPREFIX', defined(STDIN)?'':'<p class="debug">'.PHP_EOL);
-if (!defined(DEBUGSUFFIX)) define('DEBUGSUFFIX', defined(STDIN)?'':'</p>'.PHP_EOL);
-if (!defined(DIEPREFIX)) define('DIEPREFIX', defined(STDIN)?'':'<div class="error">'.PHP_EOL);
-if (!defined(DIESUFFIX)) define('DIESUFFIX', defined(STDIN)?'':'</div>');
+if (!defined('DEBUGPREFIX')) define('DEBUGPREFIX', NOHTML?'':'<p class="debug">'.PHP_EOL);
+if (!defined('DEBUGSUFFIX')) define('DEBUGSUFFIX', NOHTML?'':'</p>'.PHP_EOL);
+if (!defined('DIEPREFIX')) define('DIEPREFIX', NOHTML?'':'<div class="error">'.PHP_EOL);
+if (!defined('DIESUFFIX')) define('DIESUFFIX', NOHTML?'':'</div>');
 
 
 
@@ -110,19 +110,22 @@ function build_url($parts)
  **/
 function debug($msg,$var='',$file='',$line='')
 {
-	if (DEBUG) {
+	if (DEBUG) {;
+		$out = '';
 		echo DEBUGPREFIX.PHP_EOL;
 		$file = basename($file);
-		if (!empty($file)) echo $file;
-		if (!empty($line)) echo '@'.$line;
-		echo "DEBUG: $msg".PHP_EOL;
+		if (!empty($file)) $out .= $file;
+		if (!empty($line)) $out .= '@'.$line;
+		$out .= "DEBUG: $msg".PHP_EOL;
 		if (!empty($var)) {
 			if (is_array($var)) {
-				echo htmlspecialchars(print_r($var,true));				
+				$out .= NOHTML?print_r($var,true):htmlspecialchars(print_r($var,true));				
 			} else {
-				echo htmlspecialchars($var);
+				$out .= NOHTML?$var:htmlspecialchars($var);
 			}
 		}
+		echo $out;
+		error_log($out);
 		echo DEBUGSUFFIX.PHP_EOL;
 	}
 }

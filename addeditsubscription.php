@@ -62,9 +62,11 @@ function save_subscription($name,$uri,$id=0)
  **/
 function validatename($name)
 {
-	global $errors,$messages;
+	global $errors,$messages,$db;
+	debug(basename(__FILE__).'@'.__LINE__." name=[$name]");
 	$name = strip_tags($name);
-	if (!get_magic_quotes_gpc()) $name = mysqli_real_escape_string($name);
+	if (!get_magic_quotes_gpc()) $name = mysqli_real_escape_string($db, $name);
+	debug(basename(__FILE__).'@'.__LINE__." name=[$name]");
 	if (preg_match('/^\s*$/',$name)) {
 		/* $name is empty */
 		$errors[] = "Name must not be empty.";

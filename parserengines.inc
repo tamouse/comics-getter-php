@@ -66,7 +66,7 @@ function parse_gocomics($uri)
 	}
 	$feature_item_img = $feature_item_container->find('img',0);
 	debug(basename(__FILE__).'@'.__LINE__.' feature_item_img='.htmlspecialchars($feature_item_img));
-	if (!feature_item_img) {
+	if (!$feature_item_img) {
 		$errors[]="Could not find img in p.feature_item in $uri";
 		return NULL;
 	}
@@ -137,4 +137,54 @@ function parse_sinfest($uri)
 	debug(basename(__FILE__).'@'.__LINE__." exiting parse_sinfest. comicdate=$comicdate (".date(DATE_RFC822,$comicdate)."). imgsrc=$imgsrc.");
 	if (isset($comicdate) && isset($imgsrc)) return  array($comicdate, $imgsrc);
 	return NULL;
+}
+
+
+/**
+ * Parse the comic at http://twolumps.net
+ *
+ * @return array comicdate, imgsrc
+ * @author Tamara Temple
+ **/
+function parse_twolumps($uri)
+{
+	global $errors, $messages;
+	$contents = fetch_url_curl($uri);
+	if (!$contents || empty($contents)) {
+		$errors[] = "Could not retrieve contents of $uri via curl";
+		return NULL;
+	}
+	
+	$uri_parts = parse_url($uri);
+	
+	$html = new simple_html_dom();
+	$html->load($contents);
+	
+	$imgs = $html->find('img');
+	
+	$foundimg = FALSE;
+	
+	foreach ($imgs as $img) {
+		$src = $img->src;
+		if (preg_match('@^/comics/(\d{4})(\d{2})(\d{2})\.jpg$@', $src, $matches)) {
+			debug(basename(__FILE__).'@'.__LINE__." \$src=$src");
+			debug(basename(__FILE__).'@'.__LINE__." matches=<pre>".print_r($matches,true)."</pre>");
+			$imgsrc = $uri_parts['scheme'].'://'.$uri_parts['host'].$src;
+			$year = $matches[1]; // saved search pattern from preg_match
+			$month = $matches[2];
+			$day = $matches[3];
+			
+			$comicdate=strtotime("$year/$month/$day");
+			$foundimg=TRUE;
+			break; // we got a match, we're done, break the foreach loop			
+		}
+	}
+	
+	if (!$foundimg) {
+		$errors[]="No comic found in $uri";
+		return NULL;
+	} else {
+		debug(basename(__FILE__).'@'.__LINE__." exiting ".__FUNCTION__." comicdate=(".date(DATE_RFC822,$comicdate).") imgsrc=($imgsrc)");
+		return array($comicdate, $imgsrc);
+	}
 }

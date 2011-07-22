@@ -13,10 +13,19 @@
  * @package comicgetter
  **/
 
+$messages=array();
+$messages[]="Begin retrieval of comics at ".date("r");
+
 /**
  * Define DocBlock
  **/
-
+define("MIMETYPE",'file --brief --mime'); /* flags set for file program: brief, return mimetype */
+$mimemappings = array('image/jpeg' => '.jpg', 
+	'image/gif' => '.gif',
+	'image/png' => '.png',
+	'image/tiff' => '.tiff',
+	);
+	
 require_once('config.inc');
 require_once('parserengines.inc');
 
@@ -36,22 +45,10 @@ function determine_extension($fn)
 	debug("\$cmd=$cmd");
 	$result = rtrim(`$cmd`);
 	debug("\$result=$result");
-	switch ($result) {
-		case 'image/jpeg':
-			$ext = "jpg";
-			break;
-		
-		case 'image/gif':
-			$ext = "gif";
-			break;
-			
-		case 'image/png':
-			$ext = "png";
-			break;
-			
-		default:
-			$ext = "dat";
-			break;
+	if (isset($mimetypemappings[$result])) {
+		$ext = $mimetypemappings[$result];
+	} else {
+		$ext = '.dat';
 	}
 	return $ext;
 }
