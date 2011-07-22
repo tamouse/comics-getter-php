@@ -20,10 +20,10 @@ $messages[]="Begin retrieval of comics at ".date("r");
  * Define DocBlock
  **/
 define("MIMETYPE",'file --brief --mime'); /* flags set for file program: brief, return mimetype */
-$mimemappings = array('image/jpeg' => '.jpg', 
-	'image/gif' => '.gif',
-	'image/png' => '.png',
-	'image/tiff' => '.tiff',
+$mimemappings = array('image/jpeg' => 'jpg', 
+	'image/gif' => 'gif',
+	'image/png' => 'png',
+	'image/tiff' => 'tiff',
 	);
 	
 require_once('config.inc');
@@ -48,7 +48,7 @@ function determine_extension($fn)
 	if (isset($mimetypemappings[$result])) {
 		$ext = $mimetypemappings[$result];
 	} else {
-		$ext = '.dat';
+		$ext = 'dat';
 	}
 	return $ext;
 }
