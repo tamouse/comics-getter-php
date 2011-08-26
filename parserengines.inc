@@ -42,8 +42,11 @@ function parse_comics($uri)
 function parse_gocomics($uri)
 {
 	global $errors;
+	debug(basename(__FILE__).'@'.__LINE__.':'."Entering ".__FUNCTION__);
+	debug(basename(__FILE__).'@'.__LINE__.'('.__FUNCTION__.')'." real memory usage: ".memory_get_usage(TRUE));
 	if (empty($uri)) {
 		$errors[]="Parameter uri not set on entry to parse_gocomics";
+	debug(basename(__FILE__).'@'.__LINE__.'('.__FUNCTION__.')'." real memory usage: ".memory_get_usage(TRUE));
 		return NULL;
 	}
 	$comicdate=NULL;
@@ -54,6 +57,8 @@ function parse_gocomics($uri)
 	$contents = fetch_url_curl($uri);
 	if (!$contents || empty($contents)) {
 		$errors[]="No contents at $uri";
+		unset($html);
+	debug(basename(__FILE__).'@'.__LINE__.'('.__FUNCTION__.')'." real memory usage: ".memory_get_usage(TRUE));
 		return NULL;		
 	}
 	$html->load($contents);
@@ -62,34 +67,48 @@ function parse_gocomics($uri)
 	debug(basename(__FILE__).'@'.__LINE__.' feature_item_container='.htmlspecialchars($feature_item_container));
 	if (!$feature_item_container) {
 		$errors[]="Could not find p.feature_item in $uri";
+		unset($html,$feature_item_container);
+	debug(basename(__FILE__).'@'.__LINE__.'('.__FUNCTION__.')'." real memory usage: ".memory_get_usage(TRUE));
 		return NULL;
 	}
 	$feature_item_img = $feature_item_container->find('img',0);
 	debug(basename(__FILE__).'@'.__LINE__.' feature_item_img='.htmlspecialchars($feature_item_img));
 	if (!$feature_item_img) {
 		$errors[]="Could not find img in p.feature_item in $uri";
+		unset($html,$feature_item_container,$feature_item_img);
+	debug(basename(__FILE__).'@'.__LINE__.'('.__FUNCTION__.')'." real memory usage: ".memory_get_usage(TRUE));
 		return NULL;
 	}
 	$imgsrc=$feature_item_img->src;
 	debug(basename(__FILE__).'@'.__LINE__.' imgsrc='.$imgsrc);
 	if (!$imgsrc) {
 		$errors[]="Could not find src attribute in img in p.feature_item in $uri";
+		unset($html,$feature_item_container,$feature_item_img);
+	debug(basename(__FILE__).'@'.__LINE__.'('.__FUNCTION__.')'." real memory usage: ".memory_get_usage(TRUE));
 		return NULL;
 	}
+	unset($feature_item_container,$feature_item_img);
 	$feature_nav = $html->find('ul.feature-nav li',0); // retrieve the container for the date
 	debug(basename(__FILE__).'@'.__LINE__.' feature_nav='.htmlspecialchars($feature_nav));
 	if (!$feature_nav) {
 		$errors[]="Could not find ul.feature-nav li in $uri";
+		unset($html,$feature_nav);
+	debug(basename(__FILE__).'@'.__LINE__.'('.__FUNCTION__.')'." real memory usage: ".memory_get_usage(TRUE));
 		return NULL;
 	}
 	$comicdate_str = $feature_nav->innertext;
 	debug(basename(__FILE__).'@'.__LINE__." comicdate_str=$comicdate_str");
 	if (!$comicdate_str) {
 		$errors[]="Could not find innertext in feature_nav in $uri";
+		unset($html,$feature_nav);
+	debug(basename(__FILE__).'@'.__LINE__.'('.__FUNCTION__.')'." real memory usage: ".memory_get_usage(TRUE));
 		return NULL;
 	}
 	$comicdate = strtotime($comicdate_str);
+	unset($feature_nav);
 	debug(basename(__FILE__)."@".__LINE__." returning Array($comicdate (".date(DATE_RFC822,$comicdate)."), $imgsrc)  ");
+	debug(basename(__FILE__).'@'.__LINE__.'('.__FUNCTION__.')'." real memory usage: ".memory_get_usage(TRUE));
+	unset($html);
 	
 	return Array($comicdate, $imgsrc);
 }
@@ -105,9 +124,12 @@ function parse_gocomics($uri)
 function parse_sinfest($uri)
 {
 	global $errors, $messages;
+	debug(basename(__FILE__).'@'.__LINE__.':'."Entering ".__FUNCTION__);
+	debug(basename(__FILE__).'@'.__LINE__.'('.__FUNCTION__.')'." real memory usage: ".memory_get_usage(TRUE));
 	$contents = fetch_url_curl($uri);
 	if (!$contents || empty($contents)) {
 		$errors[]="Could not retrieve contents of $uri via curl";
+	debug(basename(__FILE__).'@'.__LINE__.'('.__FUNCTION__.')'." real memory usage: ".memory_get_usage(TRUE));
 		return NULL;
 	}
 	$html = new simple_html_dom();
@@ -118,13 +140,13 @@ function parse_sinfest($uri)
 		$src=$img->src;
 		if (preg_match('/comikaze/',$src)) {
 			// this is the image source
-			debug("\$src=$src");
+			debug(basename(__FILE__).'@'.__LINE__."\$src=$src");
 			$imgsrc=$src;
 			$srcparts = parse_url($src);
 			$filename=basename($srcparts['path'],'.gif');
-			debug("\$filename=$filename");
+			debug(basename(__FILE__).'@'.__LINE__."\$filename=$filename");
 			$comicdate = strtotime($filename);
-			debug("\$comicdate=$comicdate");
+			debug(basename(__FILE__).'@'.__LINE__."\$comicdate=$comicdate");
 			$foundimg=TRUE;
 			break; /* we got a match, we're done */			
 		}
@@ -135,6 +157,8 @@ function parse_sinfest($uri)
 		//$messages[]="Found comic in $url. img=$imgsrc, date=".date(DATE_RFC822,$comicdate);
 	}
 	debug(basename(__FILE__).'@'.__LINE__." exiting parse_sinfest. comicdate=$comicdate (".date(DATE_RFC822,$comicdate)."). imgsrc=$imgsrc.");
+	unset($html,$imgs);
+	debug(basename(__FILE__).'@'.__LINE__.'('.__FUNCTION__.')'." real memory usage: ".memory_get_usage(TRUE));
 	if (isset($comicdate) && isset($imgsrc)) return  array($comicdate, $imgsrc);
 	return NULL;
 }
@@ -149,9 +173,12 @@ function parse_sinfest($uri)
 function parse_twolumps($uri)
 {
 	global $errors, $messages;
+	debug(basename(__FILE__).'@'.__LINE__.':'."Entering ".__FUNCTION__);
+	debug(basename(__FILE__).'@'.__LINE__.'('.__FUNCTION__.')'." real memory usage: ".memory_get_usage(TRUE));
 	$contents = fetch_url_curl($uri);
 	if (!$contents || empty($contents)) {
 		$errors[] = "Could not retrieve contents of $uri via curl";
+	debug(basename(__FILE__).'@'.__LINE__.'('.__FUNCTION__.')'." real memory usage: ".memory_get_usage(TRUE));
 		return NULL;
 	}
 	
@@ -179,12 +206,14 @@ function parse_twolumps($uri)
 			break; // we got a match, we're done, break the foreach loop			
 		}
 	}
-	
+	unset($html,$imgs);
 	if (!$foundimg) {
 		$errors[]="No comic found in $uri";
+	debug(basename(__FILE__).'@'.__LINE__.'('.__FUNCTION__.')'." real memory usage: ".memory_get_usage(TRUE));
 		return NULL;
 	} else {
 		debug(basename(__FILE__).'@'.__LINE__." exiting ".__FUNCTION__." comicdate=(".date(DATE_RFC822,$comicdate).") imgsrc=($imgsrc)");
+	debug(basename(__FILE__).'@'.__LINE__.'('.__FUNCTION__.')'." real memory usage: ".memory_get_usage(TRUE));
 		return array($comicdate, $imgsrc);
 	}
 }

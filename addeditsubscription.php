@@ -35,8 +35,8 @@ function save_subscription($name,$uri,$id=0)
 {
 	global $db;
 	$sql = (ACTION == 'NEW' ? "INSERT INTO" : "UPDATE")." ".SUBSCRIPTIONSTBL." SET ";
-	$columns[]	= '`name`='."'".$name."'";
-	$columns[]	= '`uri`='."'".$uri."'";
+	$columns[]	= '`name`='."'".$db->mysqli_real_escape_string($name)."'";
+	$columns[]	= '`uri`='."'".$db->mysqli_real_escape_string($uri)."'";
 	if (ACTION == 'NEW') $columns[]	= '`created`=NOW()';
 	$columns[]	= '`updated`=NOW()';
 	$sql .= join(", ",$columns);

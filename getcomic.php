@@ -20,11 +20,6 @@ $messages[]="Begin retrieval of comics at ".date("r");
  * Define DocBlock
  **/
 define("MIMETYPE",'file --brief --mime'); /* flags set for file program: brief, return mimetype */
-$mimemappings = array('image/jpeg' => 'jpg', 
-	'image/gif' => 'gif',
-	'image/png' => 'png',
-	'image/tiff' => 'tiff',
-	);
 	
 require_once('config.inc');
 require_once('parserengines.inc');
@@ -41,10 +36,16 @@ require_once('parserengines.inc');
  **/
 function determine_extension($fn)
 {
+	$mimetypemappings = array('image/jpeg' => 'jpg', 
+		'image/gif' => 'gif',
+		'image/png' => 'png',
+		'image/tiff' => 'tiff',
+		);
 	$cmd = MIMETYPE." ".escapeshellcmd($fn)." 2>/dev/null";
-	debug("\$cmd=$cmd");
+	debug(basename(__FILE__).'@'.__LINE__.'('.__FUNCTION__.')'."\$cmd=$cmd");
 	$result = rtrim(`$cmd`);
-	debug("\$result=$result");
+	debug(basename(__FILE__).'@'.__LINE__.'('.__FUNCTION__.')'."\$result=$result");
+	@debug_var(basename(__FILE__).'@'.__LINE__.'('.__FUNCTION__.')'."mimetypemappings[$result]=",$mimetypemappings[$result]);
 	if (isset($mimetypemappings[$result])) {
 		$ext = $mimetypemappings[$result];
 	} else {
@@ -66,7 +67,7 @@ function pull_comic($name, $date, $imguri)
 	global $messages,$errors;
 	$ch = curl_init();
 	$fn = tempnam(TEMPDIR, "comic");
-	debug("\$fn=$fn");
+	debug(basename(__FILE__).'@'.__LINE__.'('.__FUNCTION__.')'."\$fn=$fn");
 	$fh = fopen($fn,'w');
 	$options = Array(
 		CURLOPT_URL => $imguri,
@@ -87,7 +88,7 @@ function pull_comic($name, $date, $imguri)
 	if (file_exists($fn)) {
 		chmod($fn,0666);
 		$ext = determine_extension($fn);
-		debug("\$ext=$ext");
+		debug(basename(__FILE__).'@'.__LINE__.'('.__FUNCTION__.')'."\$ext=$ext");
 		if ($ext == 'dat') {
 			$error_msg = "File retrieved $fn is not an image type of file";
 			$errors[] = $error_msg;
@@ -113,11 +114,11 @@ function save_comic($comic_id, $comic_date, $imgsrc, $filespec)
 	global $db;
 	$sql = "INSERT INTO `" . COMICSTBL . "` SET ";
 	$insert_data[] = "`subscription_id`=" . $comic_id;
-	$insert_data[] = "`imgsrc`='" . $imgsrc ."'";
-	$insert_data[] = "`filespec`='" . $filespec . "'";
+	$insert_data[] = "`imgsrc`='" . mysqli_real_escape_string($db, $imgsrc)  ."'";
+	$insert_data[] = "`filespec`='" . mysqli_real_escape_string($db, $filespec) . "'";
 	$insert_data[] = "`comicdate`='" . date('Y-m-d H:i:s', $comic_date) . "'";
 	$sql .= join(", ", $insert_data);
-	debug("\$sql=$sql");
+	debug(basename(__FILE__).'@'.__LINE__.'('.__FUNCTION__.')'."\$sql=$sql");
 	$result = $db->query($sql);
 	if ($result === FALSE)
 		emit_fatal_error("Error inserting comic into database: \$sql=$sql error=" . $db->error);
@@ -129,6 +130,11 @@ function save_comic($comic_id, $comic_date, $imgsrc, $filespec)
 /*************************************************
  * MAIN
  *************************************************/
+
+/* reserve more memory for this script */
+ini_set('memory_limit',-1); // unlimited memory usage
+
+
 
 /**
  * Get the currently subscribed comics into an array
@@ -145,7 +151,7 @@ foreach ($subscriptions as $key => $subscription) {
 		sleep (DELAY_TIME);
 		$delays++;
 	}
-	debug_var("\$subscription:",$subscription);
+	debug_var(basename(__FILE__).'@'.__LINE__.'('.__FUNCTION__.')'."\$subscription:",$subscription);
 	$engine = get_parse_engine($subscription['uri']);
 	if (isset($engine)) {
 		list ($comic_date, $imgsrc) = $engine($subscription['uri']);
@@ -178,7 +184,7 @@ foreach ($comic_ids as $key) {
 	$comic = get_this_comic($key);
 	$comics_retrieved[] = $comic;
 }
-debug_var("\$comics_retrieved=",$comics_retrieved);
+debug_var(basename(__FILE__).'@'.__LINE__.'('.__FUNCTION__.')'."\$comics_retrieved=",$comics_retrieved);
 
 if (NOHTML) {
 	if (!empty($messages)) echo "Messages:\n" . join("\n",$messages) . "\n";
