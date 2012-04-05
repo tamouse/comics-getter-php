@@ -1,10 +1,30 @@
-config.inc
-*.zip
+# Ignore the usual suspects
+# emacs backups and intermediate files
 *~
-.backups
-create_db.sql
-comics
-templates_c
+\#*\#
+.\#*
+
+# filter backups
+*.bak
+
+# compressed archives
+*.Z
+*.zip
+*.gz
+*.tar
+*.tgz
+*.bz2
+*.bzip2
+
+# os/x cruft
 .DS_*
-logs/
+.backups
 comicgetter.tmproj
+
+# These are either private or generated contents
+config.inc
+config.ini
+create_db.sql
+/comics/
+/templates_c/
+/logs/
